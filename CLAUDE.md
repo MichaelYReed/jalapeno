@@ -35,6 +35,22 @@ npm run build
 
 Frontend runs at http://localhost:5173, proxies `/api` requests to backend.
 
+### Docker (from project root)
+
+```bash
+# Build and run both services
+docker-compose up --build
+
+# Run in background
+docker-compose up -d
+
+# Stop services
+docker-compose down
+```
+
+App runs at http://localhost (frontend) and http://localhost:8000 (API).
+Set `OPENAI_API_KEY` environment variable before running.
+
 ## Architecture
 
 ### Backend
