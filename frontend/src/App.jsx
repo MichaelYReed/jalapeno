@@ -31,7 +31,7 @@ function App() {
                 <Menu className="w-6 h-6" />
               </button>
               <h1 className="text-2xl font-bold text-primary-600">
-                Jalapeno
+                Jalapeño
               </h1>
             </div>
 
