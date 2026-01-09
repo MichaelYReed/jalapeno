@@ -23,7 +23,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Smart Food Ordering API",
+    title="Jalapeno API",
     description="AI-powered food ordering system with natural language processing",
     version="1.0.0",
     lifespan=lifespan
@@ -47,7 +47,7 @@ app.include_router(ai_assistant.router, prefix="/api", tags=["AI Assistant"])
 @app.get("/")
 async def root():
     return {
-        "message": "Smart Food Ordering API",
+        "message": "Jalapeno API",
         "docs": "/docs",
         "endpoints": {
             "products": "/api/products",
