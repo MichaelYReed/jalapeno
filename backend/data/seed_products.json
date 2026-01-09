@@ -1,0 +1,628 @@
+{
+  "products": [
+    {
+      "name": "Chicken Breast Boneless",
+      "description": "Fresh boneless skinless chicken breast, ideal for grilling or baking",
+      "category": "Proteins",
+      "subcategory": "Chicken",
+      "unit": "lb",
+      "price": 4.99
+    },
+    {
+      "name": "Chicken Wings",
+      "description": "Fresh whole chicken wings, perfect for frying or baking",
+      "category": "Proteins",
+      "subcategory": "Chicken",
+      "unit": "lb",
+      "price": 3.49
+    },
+    {
+      "name": "Ground Beef 80/20",
+      "description": "Fresh ground beef, 80% lean 20% fat",
+      "category": "Proteins",
+      "subcategory": "Beef",
+      "unit": "lb",
+      "price": 5.99
+    },
+    {
+      "name": "Ribeye Steak",
+      "description": "Premium USDA Choice ribeye steak",
+      "category": "Proteins",
+      "subcategory": "Beef",
+      "unit": "lb",
+      "price": 14.99
+    },
+    {
+      "name": "Pork Chops",
+      "description": "Center cut bone-in pork chops",
+      "category": "Proteins",
+      "subcategory": "Pork",
+      "unit": "lb",
+      "price": 4.49
+    },
+    {
+      "name": "Bacon Sliced",
+      "description": "Thick-cut applewood smoked bacon",
+      "category": "Proteins",
+      "subcategory": "Pork",
+      "unit": "lb",
+      "price": 7.99
+    },
+    {
+      "name": "Atlantic Salmon Fillet",
+      "description": "Fresh Atlantic salmon fillet, skin-on",
+      "category": "Proteins",
+      "subcategory": "Seafood",
+      "unit": "lb",
+      "price": 12.99
+    },
+    {
+      "name": "Shrimp 21/25",
+      "description": "Raw peeled and deveined shrimp, 21-25 count per pound",
+      "category": "Proteins",
+      "subcategory": "Seafood",
+      "unit": "lb",
+      "price": 11.99
+    },
+    {
+      "name": "Tilapia Fillet",
+      "description": "Fresh tilapia fillet, boneless",
+      "category": "Proteins",
+      "subcategory": "Seafood",
+      "unit": "lb",
+      "price": 6.99
+    },
+    {
+      "name": "Roma Tomatoes",
+      "description": "Fresh roma tomatoes, perfect for sauces",
+      "category": "Produce",
+      "subcategory": "Vegetables",
+      "unit": "lb",
+      "price": 2.49
+    },
+    {
+      "name": "Yellow Onions",
+      "description": "Fresh yellow onions, 3lb bag",
+      "category": "Produce",
+      "subcategory": "Vegetables",
+      "unit": "bag",
+      "price": 3.99
+    },
+    {
+      "name": "Russet Potatoes",
+      "description": "Idaho russet potatoes, 10lb bag",
+      "category": "Produce",
+      "subcategory": "Vegetables",
+      "unit": "bag",
+      "price": 6.99
+    },
+    {
+      "name": "Baby Spinach",
+      "description": "Fresh baby spinach, 5oz clamshell",
+      "category": "Produce",
+      "subcategory": "Vegetables",
+      "unit": "each",
+      "price": 4.49
+    },
+    {
+      "name": "Romaine Lettuce",
+      "description": "Fresh romaine lettuce hearts, 3-pack",
+      "category": "Produce",
+      "subcategory": "Vegetables",
+      "unit": "pack",
+      "price": 3.99
+    },
+    {
+      "name": "Bell Peppers Mixed",
+      "description": "Mixed color bell peppers - red, yellow, green",
+      "category": "Produce",
+      "subcategory": "Vegetables",
+      "unit": "each",
+      "price": 1.29
+    },
+    {
+      "name": "Carrots",
+      "description": "Fresh whole carrots, 2lb bag",
+      "category": "Produce",
+      "subcategory": "Vegetables",
+      "unit": "bag",
+      "price": 2.49
+    },
+    {
+      "name": "Broccoli Crowns",
+      "description": "Fresh broccoli crowns",
+      "category": "Produce",
+      "subcategory": "Vegetables",
+      "unit": "lb",
+      "price": 2.99
+    },
+    {
+      "name": "Garlic Bulbs",
+      "description": "Fresh garlic bulbs, 3-pack",
+      "category": "Produce",
+      "subcategory": "Vegetables",
+      "unit": "pack",
+      "price": 2.49
+    },
+    {
+      "name": "Bananas",
+      "description": "Fresh yellow bananas",
+      "category": "Produce",
+      "subcategory": "Fruits",
+      "unit": "lb",
+      "price": 0.69
+    },
+    {
+      "name": "Apples Gala",
+      "description": "Fresh Gala apples, sweet and crisp",
+      "category": "Produce",
+      "subcategory": "Fruits",
+      "unit": "lb",
+      "price": 1.99
+    },
+    {
+      "name": "Lemons",
+      "description": "Fresh lemons, great for cooking and drinks",
+      "category": "Produce",
+      "subcategory": "Fruits",
+      "unit": "each",
+      "price": 0.49
+    },
+    {
+      "name": "Limes",
+      "description": "Fresh limes",
+      "category": "Produce",
+      "subcategory": "Fruits",
+      "unit": "each",
+      "price": 0.39
+    },
+    {
+      "name": "Strawberries",
+      "description": "Fresh strawberries, 1lb container",
+      "category": "Produce",
+      "subcategory": "Fruits",
+      "unit": "container",
+      "price": 4.99
+    },
+    {
+      "name": "Fresh Basil",
+      "description": "Fresh basil bunch",
+      "category": "Produce",
+      "subcategory": "Herbs",
+      "unit": "bunch",
+      "price": 2.99
+    },
+    {
+      "name": "Fresh Cilantro",
+      "description": "Fresh cilantro bunch",
+      "category": "Produce",
+      "subcategory": "Herbs",
+      "unit": "bunch",
+      "price": 1.49
+    },
+    {
+      "name": "Fresh Parsley",
+      "description": "Fresh Italian flat-leaf parsley bunch",
+      "category": "Produce",
+      "subcategory": "Herbs",
+      "unit": "bunch",
+      "price": 1.49
+    },
+    {
+      "name": "Whole Milk",
+      "description": "Fresh whole milk, gallon",
+      "category": "Dairy",
+      "subcategory": "Milk",
+      "unit": "gallon",
+      "price": 4.29
+    },
+    {
+      "name": "2% Milk",
+      "description": "Fresh 2% reduced fat milk, gallon",
+      "category": "Dairy",
+      "subcategory": "Milk",
+      "unit": "gallon",
+      "price": 4.29
+    },
+    {
+      "name": "Heavy Cream",
+      "description": "Heavy whipping cream, quart",
+      "category": "Dairy",
+      "subcategory": "Milk",
+      "unit": "quart",
+      "price": 5.99
+    },
+    {
+      "name": "Butter Unsalted",
+      "description": "Unsalted butter, 1lb",
+      "category": "Dairy",
+      "subcategory": "Butter",
+      "unit": "lb",
+      "price": 5.49
+    },
+    {
+      "name": "Butter Salted",
+      "description": "Salted butter, 1lb",
+      "category": "Dairy",
+      "subcategory": "Butter",
+      "unit": "lb",
+      "price": 5.49
+    },
+    {
+      "name": "Large Eggs",
+      "description": "Grade A large eggs, dozen",
+      "category": "Dairy",
+      "subcategory": "Eggs",
+      "unit": "dozen",
+      "price": 3.99
+    },
+    {
+      "name": "Eggs Case",
+      "description": "Grade A large eggs, 15 dozen case",
+      "category": "Dairy",
+      "subcategory": "Eggs",
+      "unit": "case",
+      "price": 45.99
+    },
+    {
+      "name": "Cheddar Cheese Block",
+      "description": "Sharp cheddar cheese, 2lb block",
+      "category": "Dairy",
+      "subcategory": "Cheese",
+      "unit": "block",
+      "price": 9.99
+    },
+    {
+      "name": "Mozzarella Shredded",
+      "description": "Shredded mozzarella cheese, 5lb bag",
+      "category": "Dairy",
+      "subcategory": "Cheese",
+      "unit": "bag",
+      "price": 18.99
+    },
+    {
+      "name": "Parmesan Grated",
+      "description": "Grated parmesan cheese, 1lb container",
+      "category": "Dairy",
+      "subcategory": "Cheese",
+      "unit": "container",
+      "price": 12.99
+    },
+    {
+      "name": "Sour Cream",
+      "description": "Sour cream, 16oz container",
+      "category": "Dairy",
+      "subcategory": "Dairy",
+      "unit": "container",
+      "price": 2.99
+    },
+    {
+      "name": "Long Grain White Rice",
+      "description": "Long grain white rice, 25lb bag",
+      "category": "Dry Goods",
+      "subcategory": "Rice",
+      "unit": "bag",
+      "price": 19.99
+    },
+    {
+      "name": "Jasmine Rice",
+      "description": "Premium jasmine rice, 10lb bag",
+      "category": "Dry Goods",
+      "subcategory": "Rice",
+      "unit": "bag",
+      "price": 14.99
+    },
+    {
+      "name": "Spaghetti Pasta",
+      "description": "Spaghetti pasta, 1lb box",
+      "category": "Dry Goods",
+      "subcategory": "Pasta",
+      "unit": "box",
+      "price": 1.99
+    },
+    {
+      "name": "Penne Pasta",
+      "description": "Penne rigate pasta, 1lb box",
+      "category": "Dry Goods",
+      "subcategory": "Pasta",
+      "unit": "box",
+      "price": 1.99
+    },
+    {
+      "name": "All Purpose Flour",
+      "description": "All purpose flour, 25lb bag",
+      "category": "Dry Goods",
+      "subcategory": "Flour",
+      "unit": "bag",
+      "price": 12.99
+    },
+    {
+      "name": "Bread Flour",
+      "description": "High-gluten bread flour, 25lb bag",
+      "category": "Dry Goods",
+      "subcategory": "Flour",
+      "unit": "bag",
+      "price": 14.99
+    },
+    {
+      "name": "Granulated Sugar",
+      "description": "Granulated white sugar, 25lb bag",
+      "category": "Dry Goods",
+      "subcategory": "Sugar",
+      "unit": "bag",
+      "price": 16.99
+    },
+    {
+      "name": "Brown Sugar",
+      "description": "Light brown sugar, 2lb bag",
+      "category": "Dry Goods",
+      "subcategory": "Sugar",
+      "unit": "bag",
+      "price": 4.49
+    },
+    {
+      "name": "Kosher Salt",
+      "description": "Kosher salt, 3lb box",
+      "category": "Dry Goods",
+      "subcategory": "Spices",
+      "unit": "box",
+      "price": 4.99
+    },
+    {
+      "name": "Black Pepper Ground",
+      "description": "Ground black pepper, 1lb container",
+      "category": "Dry Goods",
+      "subcategory": "Spices",
+      "unit": "container",
+      "price": 9.99
+    },
+    {
+      "name": "Paprika",
+      "description": "Spanish paprika, 1lb container",
+      "category": "Dry Goods",
+      "subcategory": "Spices",
+      "unit": "container",
+      "price": 7.99
+    },
+    {
+      "name": "Cumin Ground",
+      "description": "Ground cumin, 1lb container",
+      "category": "Dry Goods",
+      "subcategory": "Spices",
+      "unit": "container",
+      "price": 8.99
+    },
+    {
+      "name": "Oregano Dried",
+      "description": "Dried oregano, 8oz container",
+      "category": "Dry Goods",
+      "subcategory": "Spices",
+      "unit": "container",
+      "price": 5.99
+    },
+    {
+      "name": "Extra Virgin Olive Oil",
+      "description": "Extra virgin olive oil, 1 gallon",
+      "category": "Dry Goods",
+      "subcategory": "Oils",
+      "unit": "gallon",
+      "price": 29.99
+    },
+    {
+      "name": "Vegetable Oil",
+      "description": "Vegetable oil, 1 gallon",
+      "category": "Dry Goods",
+      "subcategory": "Oils",
+      "unit": "gallon",
+      "price": 8.99
+    },
+    {
+      "name": "Canola Oil",
+      "description": "Canola oil, 1 gallon",
+      "category": "Dry Goods",
+      "subcategory": "Oils",
+      "unit": "gallon",
+      "price": 9.99
+    },
+    {
+      "name": "Coca-Cola Classic",
+      "description": "Coca-Cola Classic, 24-pack cans",
+      "category": "Beverages",
+      "subcategory": "Soft Drinks",
+      "unit": "case",
+      "price": 12.99
+    },
+    {
+      "name": "Pepsi",
+      "description": "Pepsi, 24-pack cans",
+      "category": "Beverages",
+      "subcategory": "Soft Drinks",
+      "unit": "case",
+      "price": 12.99
+    },
+    {
+      "name": "Sprite",
+      "description": "Sprite, 24-pack cans",
+      "category": "Beverages",
+      "subcategory": "Soft Drinks",
+      "unit": "case",
+      "price": 12.99
+    },
+    {
+      "name": "Orange Juice",
+      "description": "Fresh squeezed orange juice, gallon",
+      "category": "Beverages",
+      "subcategory": "Juices",
+      "unit": "gallon",
+      "price": 8.99
+    },
+    {
+      "name": "Apple Juice",
+      "description": "Apple juice, gallon",
+      "category": "Beverages",
+      "subcategory": "Juices",
+      "unit": "gallon",
+      "price": 6.99
+    },
+    {
+      "name": "Coffee Beans Dark Roast",
+      "description": "Dark roast coffee beans, 5lb bag",
+      "category": "Beverages",
+      "subcategory": "Coffee",
+      "unit": "bag",
+      "price": 34.99
+    },
+    {
+      "name": "Coffee Beans Medium Roast",
+      "description": "Medium roast coffee beans, 5lb bag",
+      "category": "Beverages",
+      "subcategory": "Coffee",
+      "unit": "bag",
+      "price": 32.99
+    },
+    {
+      "name": "Bottled Water",
+      "description": "Bottled water, 24-pack 16.9oz",
+      "category": "Beverages",
+      "subcategory": "Water",
+      "unit": "case",
+      "price": 5.99
+    },
+    {
+      "name": "Frozen French Fries",
+      "description": "Frozen crinkle cut french fries, 5lb bag",
+      "category": "Frozen",
+      "subcategory": "Frozen Vegetables",
+      "unit": "bag",
+      "price": 8.99
+    },
+    {
+      "name": "Frozen Mixed Vegetables",
+      "description": "Frozen mixed vegetables, 5lb bag",
+      "category": "Frozen",
+      "subcategory": "Frozen Vegetables",
+      "unit": "bag",
+      "price": 7.99
+    },
+    {
+      "name": "Frozen Peas",
+      "description": "Frozen green peas, 5lb bag",
+      "category": "Frozen",
+      "subcategory": "Frozen Vegetables",
+      "unit": "bag",
+      "price": 6.99
+    },
+    {
+      "name": "Frozen Corn",
+      "description": "Frozen sweet corn, 5lb bag",
+      "category": "Frozen",
+      "subcategory": "Frozen Vegetables",
+      "unit": "bag",
+      "price": 6.99
+    },
+    {
+      "name": "Vanilla Ice Cream",
+      "description": "Premium vanilla ice cream, 3 gallon tub",
+      "category": "Frozen",
+      "subcategory": "Ice Cream",
+      "unit": "tub",
+      "price": 24.99
+    },
+    {
+      "name": "Chocolate Ice Cream",
+      "description": "Premium chocolate ice cream, 3 gallon tub",
+      "category": "Frozen",
+      "subcategory": "Ice Cream",
+      "unit": "tub",
+      "price": 24.99
+    },
+    {
+      "name": "To-Go Containers 32oz",
+      "description": "Plastic to-go containers with lids, 32oz, 150 count",
+      "category": "Supplies",
+      "subcategory": "Packaging",
+      "unit": "case",
+      "price": 34.99
+    },
+    {
+      "name": "Aluminum Foil Roll",
+      "description": "Heavy duty aluminum foil, 18\" x 500ft roll",
+      "category": "Supplies",
+      "subcategory": "Packaging",
+      "unit": "roll",
+      "price": 29.99
+    },
+    {
+      "name": "Plastic Wrap",
+      "description": "Plastic food wrap, 18\" x 2000ft roll",
+      "category": "Supplies",
+      "subcategory": "Packaging",
+      "unit": "roll",
+      "price": 24.99
+    },
+    {
+      "name": "Disposable Gloves",
+      "description": "Nitrile disposable gloves, medium, 100 count",
+      "category": "Supplies",
+      "subcategory": "Safety",
+      "unit": "box",
+      "price": 12.99
+    },
+    {
+      "name": "Paper Towels",
+      "description": "Paper towel rolls, 12-pack",
+      "category": "Supplies",
+      "subcategory": "Cleaning",
+      "unit": "pack",
+      "price": 18.99
+    },
+    {
+      "name": "Dish Soap",
+      "description": "Commercial dish soap, gallon",
+      "category": "Supplies",
+      "subcategory": "Cleaning",
+      "unit": "gallon",
+      "price": 8.99
+    },
+    {
+      "name": "Sanitizer Spray",
+      "description": "Food-safe sanitizer spray, gallon",
+      "category": "Supplies",
+      "subcategory": "Cleaning",
+      "unit": "gallon",
+      "price": 14.99
+    },
+    {
+      "name": "Diced Tomatoes Canned",
+      "description": "Diced tomatoes, #10 can",
+      "category": "Dry Goods",
+      "subcategory": "Canned Goods",
+      "unit": "can",
+      "price": 4.99
+    },
+    {
+      "name": "Tomato Paste",
+      "description": "Tomato paste, 6oz can",
+      "category": "Dry Goods",
+      "subcategory": "Canned Goods",
+      "unit": "can",
+      "price": 1.49
+    },
+    {
+      "name": "Black Beans Canned",
+      "description": "Black beans, #10 can",
+      "category": "Dry Goods",
+      "subcategory": "Canned Goods",
+      "unit": "can",
+      "price": 3.99
+    },
+    {
+      "name": "Chickpeas Canned",
+      "description": "Chickpeas (garbanzo beans), #10 can",
+      "category": "Dry Goods",
+      "subcategory": "Canned Goods",
+      "unit": "can",
+      "price": 4.49
+    }
+  ]
+}
