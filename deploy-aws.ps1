@@ -1,0 +1,248 @@
+# Jalapeno AWS Deployment Script (PowerShell)
+# Uses AWS Copilot for simple ECS deployment
+
+param(
+    [string]$Command = "help"
+)
+
+$ErrorActionPreference = "Stop"
+
+function Write-Step($message) {
+    Write-Host "`n==> $message" -ForegroundColor Cyan
+}
+
+function Write-Success($message) {
+    Write-Host "[OK] $message" -ForegroundColor Green
+}
+
+function Write-Error($message) {
+    Write-Host "[ERROR] $message" -ForegroundColor Red
+}
+
+# Check prerequisites
+function Test-Prerequisites {
+    Write-Step "Checking prerequisites..."
+
+    # Check AWS CLI
+    try {
+        $awsVersion = aws --version 2>&1
+        Write-Success "AWS CLI installed: $awsVersion"
+    } catch {
+        Write-Error "AWS CLI not installed"
+        Write-Host "Install from: https://awscli.amazonaws.com/AWSCLIV2.msi"
+        exit 1
+    }
+
+    # Check AWS credentials
+    try {
+        $identity = aws sts get-caller-identity 2>&1
+        Write-Success "AWS credentials configured"
+    } catch {
+        Write-Error "AWS credentials not configured. Run: aws configure"
+        exit 1
+    }
+
+    # Check Copilot
+    try {
+        $copilotVersion = copilot --version 2>&1
+        Write-Success "AWS Copilot installed: $copilotVersion"
+    } catch {
+        Write-Error "AWS Copilot not installed"
+        Write-Host "Install from: https://aws.github.io/copilot-cli/"
+        Write-Host "Or run: Invoke-WebRequest -Uri https://github.com/aws/copilot-cli/releases/latest/download/copilot-windows.exe -OutFile copilot.exe"
+        exit 1
+    }
+
+    # Check Docker
+    try {
+        docker --version | Out-Null
+        Write-Success "Docker installed"
+    } catch {
+        Write-Error "Docker not installed or not running"
+        exit 1
+    }
+}
+
+# Initialize Copilot app
+function Initialize-App {
+    Write-Step "Initializing Copilot application..."
+
+    Push-Location $PSScriptRoot
+
+    # Initialize app if not exists
+    if (-not (Test-Path "copilot/.workspace")) {
+        copilot app init jalapeno
+    } else {
+        Write-Host "App already initialized"
+    }
+
+    Pop-Location
+}
+
+# Create environment
+function Initialize-Environment {
+    Write-Step "Creating production environment..."
+
+    Push-Location $PSScriptRoot
+    copilot env init --name prod --default-config
+    copilot env deploy --name prod
+    Pop-Location
+}
+
+# Store secrets
+function Set-Secrets {
+    param([string]$OpenAIKey)
+
+    Write-Step "Storing secrets in AWS SSM..."
+
+    if (-not $OpenAIKey) {
+        $OpenAIKey = Read-Host "Enter your OpenAI API key"
+    }
+
+    aws ssm put-parameter `
+        --name "/copilot/jalapeno/prod/secrets/OPENAI_API_KEY" `
+        --value $OpenAIKey `
+        --type SecureString `
+        --overwrite
+
+    Write-Success "OpenAI API key stored"
+}
+
+# Deploy backend
+function Deploy-Backend {
+    Write-Step "Deploying backend service..."
+
+    Push-Location $PSScriptRoot
+
+    # Initialize service if not exists
+    $svcExists = copilot svc ls 2>&1 | Select-String "backend"
+    if (-not $svcExists) {
+        copilot svc init --name backend --svc-type "Load Balanced Web Service" --dockerfile backend/Dockerfile --port 8000
+    }
+
+    # Deploy
+    copilot svc deploy --name backend --env prod
+
+    Pop-Location
+}
+
+# Deploy frontend to S3
+function Deploy-Frontend {
+    Write-Step "Deploying frontend..."
+
+    Push-Location $PSScriptRoot/frontend
+
+    # Get backend URL
+    $backendUrl = copilot svc show --name backend --json | ConvertFrom-Json | Select-Object -ExpandProperty routes | Select-Object -First 1 -ExpandProperty url
+
+    Write-Host "Backend URL: $backendUrl"
+
+    # Build frontend
+    Write-Step "Building frontend..."
+    npm run build
+
+    # Create S3 bucket
+    $bucketName = "jalapeno-frontend-$(Get-Random -Maximum 99999)"
+
+    Write-Step "Creating S3 bucket: $bucketName"
+    aws s3 mb "s3://$bucketName"
+
+    # Configure for static hosting
+    aws s3 website "s3://$bucketName" --index-document index.html --error-document index.html
+
+    # Upload files
+    Write-Step "Uploading to S3..."
+    aws s3 sync dist/ "s3://$bucketName/" --delete
+
+    # Make public
+    $policy = @"
+{
+    "Version": "2012-10-17",
+    "Statement": [{
+        "Sid": "PublicRead",
+        "Effect": "Allow",
+        "Principal": "*",
+        "Action": "s3:GetObject",
+        "Resource": "arn:aws:s3:::$bucketName/*"
+    }]
+}
+"@
+
+    aws s3api put-public-access-block --bucket $bucketName --public-access-block-configuration "BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false"
+    $policy | aws s3api put-bucket-policy --bucket $bucketName --policy file:///dev/stdin
+
+    Pop-Location
+
+    Write-Success "Frontend deployed!"
+    Write-Host "Frontend URL: http://$bucketName.s3-website-us-east-1.amazonaws.com"
+}
+
+# Show status
+function Show-Status {
+    Write-Step "Application Status"
+    copilot svc status --name backend
+
+    Write-Step "Service URL"
+    copilot svc show --name backend
+}
+
+# Full deployment
+function Deploy-All {
+    Test-Prerequisites
+    Initialize-App
+    Initialize-Environment
+    Set-Secrets
+    Deploy-Backend
+    Deploy-Frontend
+    Show-Status
+}
+
+# Cleanup
+function Remove-All {
+    Write-Step "Removing all AWS resources..."
+
+    $confirm = Read-Host "This will delete everything. Type 'yes' to confirm"
+    if ($confirm -eq "yes") {
+        copilot app delete --yes
+        Write-Success "All resources deleted"
+    } else {
+        Write-Host "Cancelled"
+    }
+}
+
+# Main
+switch ($Command) {
+    "check"     { Test-Prerequisites }
+    "init"      { Initialize-App }
+    "env"       { Initialize-Environment }
+    "secrets"   { Set-Secrets }
+    "backend"   { Deploy-Backend }
+    "frontend"  { Deploy-Frontend }
+    "status"    { Show-Status }
+    "deploy"    { Deploy-All }
+    "delete"    { Remove-All }
+    default {
+        Write-Host @"
+
+Jalapeno AWS Deployment
+
+Usage: .\deploy-aws.ps1 <command>
+
+Commands:
+  check     - Verify prerequisites (AWS CLI, Copilot, Docker)
+  deploy    - Full deployment (recommended for first time)
+  init      - Initialize Copilot app only
+  env       - Create/deploy environment only
+  secrets   - Store OpenAI API key
+  backend   - Deploy backend service only
+  frontend  - Deploy frontend to S3 only
+  status    - Show deployment status
+  delete    - Remove all AWS resources
+
+First time? Run:
+  .\deploy-aws.ps1 check
+  .\deploy-aws.ps1 deploy
+
+"@
+    }
+}

@@ -26,17 +26,25 @@ export default function ProductCard({ product }) {
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
-      {/* Product Image Placeholder */}
-      <div className="h-32 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-        <span className="text-4xl">
-          {product.category === 'Proteins' && '🥩'}
-          {product.category === 'Produce' && '🥬'}
-          {product.category === 'Dairy' && '🧀'}
-          {product.category === 'Dry Goods' && '🌾'}
-          {product.category === 'Beverages' && '🥤'}
-          {product.category === 'Frozen' && '❄️'}
-          {product.category === 'Supplies' && '📦'}
-        </span>
+      {/* Product Image */}
+      <div className="h-32 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden">
+        {product.image_url ? (
+          <img
+            src={product.image_url}
+            alt={product.name}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <span className="text-4xl">
+            {product.category === 'Proteins' && '🥩'}
+            {product.category === 'Produce' && '🥬'}
+            {product.category === 'Dairy' && '🧀'}
+            {product.category === 'Dry Goods' && '🌾'}
+            {product.category === 'Beverages' && '🥤'}
+            {product.category === 'Frozen' && '❄️'}
+            {product.category === 'Supplies' && '📦'}
+          </span>
+        )}
       </div>
 
       <div className="p-4">
