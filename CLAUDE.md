@@ -111,7 +111,8 @@ Vite config proxies `/api` to `localhost:8000` for seamless backend communicatio
 
 - **database.py** - SQLAlchemy with environment-based DATABASE_URL
 - Supports PostgreSQL (production/Docker) and SQLite (local development fallback)
-- `DATABASE_URL` environment variable controls which database is used
+- `DATABASE_URL` or `DB_SECRET` (AWS Secrets Manager JSON) controls which database is used
+- Auto-seeds 78 products on startup if database is empty
 
 ### Docker
 
@@ -124,7 +125,9 @@ Vite config proxies `/api` to `localhost:8000` for seamless backend communicatio
 
 - **copilot/backend/manifest.yml** - ECS Fargate service definition
 - **copilot/environments/prod/manifest.yml** - Production environment config
+- **copilot/environments/addons/jalapeno-db.yml** - RDS PostgreSQL CloudFormation template
 - **deploy-aws.ps1** - PowerShell deployment script
+- **frontend/.env.production** - Production API URL for frontend build
 - Secrets stored in AWS SSM Parameter Store
 
 ## Key Files
@@ -140,6 +143,8 @@ Vite config proxies `/api` to `localhost:8000` for seamless backend communicatio
 | `frontend/nginx.conf` | Production proxy config |
 | `deploy-aws.ps1` | AWS Copilot deployment script |
 | `copilot/backend/manifest.yml` | ECS Fargate service config |
+| `copilot/environments/addons/jalapeno-db.yml` | RDS PostgreSQL CloudFormation |
+| `frontend/.env.production` | Production API URL for builds |
 
 ## Product Images
 
@@ -175,6 +180,8 @@ The script skips products that already have images. Unsplash free tier allows 50
 |----------|-------------|----------|
 | `OPENAI_API_KEY` | OpenAI API key for chat and voice | Yes |
 | `DATABASE_URL` | PostgreSQL connection string | Production only |
+| `DB_SECRET` | AWS Secrets Manager JSON (alternative to DATABASE_URL) | AWS only |
+| `VITE_API_URL` | Backend API URL for frontend builds | Production only |
 
 Local development uses SQLite by default if `DATABASE_URL` is not set.
 
@@ -201,4 +208,7 @@ Local development uses SQLite by default if `DATABASE_URL` is not set.
 
 AWS resources are managed by Copilot. Secrets stored in SSM Parameter Store at:
 - `/copilot/jalapeno/prod/secrets/OPENAI_API_KEY`
-- `/copilot/jalapeno/prod/secrets/DATABASE_URL`
+
+**Live URLs:**
+- Frontend: http://jalapeno-frontend-prod.s3-website-us-east-1.amazonaws.com
+- Backend API: http://jalape-Publi-n1Sr6QWCeWpE-323367462.us-east-1.elb.amazonaws.com
