@@ -1,0 +1,113 @@
+Parameters:
+  App:
+    Type: String
+    Description: Your application's name.
+  Env:
+    Type: String
+    Description: The name of the environment being deployed.
+  VPCID:
+    Type: String
+    Description: The ID of the VPC.
+    Default: ""
+  PrivateSubnets:
+    Type: String
+    Description: The IDs of the private subnets.
+    Default: ""
+
+Resources:
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnet group for Jalapeno RDS
+      SubnetIds: !Split [',', !Ref PrivateSubnets]
+      Tags:
+        - Key: Name
+          Value: !Sub ${App}-${Env}-db-subnet-group
+
+  DBSecurityGroup:
+    Metadata:
+      'aws:copilot:description': 'Security group for RDS PostgreSQL instance'
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for Jalapeno RDS instance
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: !Sub ${App}-${Env}-db-sg
+
+  WorkloadSecurityGroup:
+    Metadata:
+      'aws:copilot:description': 'Security group for workloads to access RDS'
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for workloads to access RDS
+      VpcId: !Ref VPCID
+      Tags:
+        - Key: Name
+          Value: !Sub ${App}-${Env}-workload-db-sg
+
+  DBSecurityGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref DBSecurityGroup
+      IpProtocol: tcp
+      FromPort: 5432
+      ToPort: 5432
+      SourceSecurityGroupId: !Ref WorkloadSecurityGroup
+
+  DBSecret:
+    Metadata:
+      'aws:copilot:description': 'Secrets Manager secret for DB credentials'
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: !Sub RDS credentials for ${App}-${Env}
+      GenerateSecretString:
+        SecretStringTemplate: '{"username": "jalapeno"}'
+        GenerateStringKey: "password"
+        ExcludePunctuation: true
+        IncludeSpace: false
+        PasswordLength: 16
+
+  DBInstance:
+    Metadata:
+      'aws:copilot:description': 'RDS PostgreSQL instance (db.t3.micro)'
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Delete
+    Properties:
+      DBInstanceIdentifier: !Sub ${App}-${Env}-db
+      DBInstanceClass: db.t3.micro
+      Engine: postgres
+      EngineVersion: "16.3"
+      AllocatedStorage: 20
+      StorageType: gp2
+      DBName: jalapeno
+      MasterUsername: !Sub '{{resolve:secretsmanager:${DBSecret}:SecretString:username}}'
+      MasterUserPassword: !Sub '{{resolve:secretsmanager:${DBSecret}:SecretString:password}}'
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      VPCSecurityGroups:
+        - !Ref DBSecurityGroup
+      PubliclyAccessible: false
+      BackupRetentionPeriod: 1
+      DeletionProtection: false
+      Tags:
+        - Key: Name
+          Value: !Sub ${App}-${Env}-db
+
+  SecretTargetAttachment:
+    Type: AWS::SecretsManager::SecretTargetAttachment
+    Properties:
+      SecretId: !Ref DBSecret
+      TargetId: !Ref DBInstance
+      TargetType: AWS::RDS::DBInstance
+
+Outputs:
+  jalapenoclusterAuroraSecret:
+    Description: "The secret ARN for database credentials"
+    Value: !Ref DBSecret
+    Export:
+      Name: !Sub ${App}-${Env}-jalapenoclusterAuroraSecret
+  jalapenoclusterSecurityGroup:
+    Description: "The security group for workloads to access RDS"
+    Value: !Ref WorkloadSecurityGroup
+    Export:
+      Name: !Sub ${App}-${Env}-jalapenoclusterSecurityGroup

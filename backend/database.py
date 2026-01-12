@@ -3,9 +3,33 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from datetime import datetime
 import os
+import json
 
-# Get database URL from environment, default to SQLite for local development
-DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./data/food_ordering.db")
+def get_database_url():
+    """Get database URL from environment variables.
+
+    Supports:
+    - DATABASE_URL: Direct connection string
+    - DB_SECRET: JSON secret from AWS Aurora (Copilot format)
+    - Falls back to SQLite for local development
+    """
+    # Check for direct DATABASE_URL first
+    if os.environ.get("DATABASE_URL"):
+        return os.environ.get("DATABASE_URL")
+
+    # Check for Aurora secret (JSON format from Copilot)
+    db_secret = os.environ.get("DB_SECRET")
+    if db_secret:
+        try:
+            secret = json.loads(db_secret)
+            return f"postgresql://{secret['username']}:{secret['password']}@{secret['host']}:{secret['port']}/{secret['dbname']}"
+        except (json.JSONDecodeError, KeyError) as e:
+            print(f"Warning: Failed to parse DB_SECRET: {e}")
+
+    # Default to SQLite for local development
+    return "sqlite:///./data/food_ordering.db"
+
+DATABASE_URL = get_database_url()
 
 # Configure engine based on database type
 if DATABASE_URL.startswith("sqlite"):
