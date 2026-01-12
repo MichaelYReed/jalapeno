@@ -1,0 +1,74 @@
+export default function NutritionFacts({ nutrition, loading }) {
+  if (loading) {
+    return (
+      <div className="border-2 border-black p-4 animate-pulse">
+        <div className="h-6 bg-gray-200 rounded mb-2 w-32"></div>
+        <div className="h-4 bg-gray-200 rounded mb-4 w-24"></div>
+        <div className="space-y-2">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="h-4 bg-gray-200 rounded"></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (!nutrition || nutrition.error) {
+    return (
+      <div className="border-2 border-gray-300 p-4 text-center text-gray-500 rounded-lg">
+        <p className="font-medium">Nutrition information unavailable</p>
+        <p className="text-sm mt-1">{nutrition?.error || 'Unable to fetch nutrition data'}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="border-2 border-black p-3 font-sans text-sm">
+      <h3 className="text-2xl font-black mb-0">Nutrition Facts</h3>
+      {nutrition.serving_size && (
+        <p className="text-sm border-b-8 border-black pb-1 mb-1">
+          Serving Size: {nutrition.serving_size}
+        </p>
+      )}
+
+      {/* Calories */}
+      {nutrition.calories !== null && (
+        <div className="flex justify-between border-b border-black py-1 font-bold text-lg">
+          <span>Calories</span>
+          <span>{Math.round(nutrition.calories)}</span>
+        </div>
+      )}
+
+      {/* Daily Value Header */}
+      <div className="text-right text-xs border-b border-black py-1">
+        % Daily Value*
+      </div>
+
+      {/* Nutrients */}
+      {nutrition.nutrients && nutrition.nutrients.map((nutrient, index) => (
+        <div
+          key={index}
+          className={`flex justify-between py-1 ${
+            index < nutrition.nutrients.length - 1 ? 'border-b border-gray-300' : ''
+          }`}
+        >
+          <span className={nutrient.name.includes('Fat') || nutrient.name.includes('Carbs') || nutrient.name === 'Protein' ? 'font-bold' : 'pl-4'}>
+            {nutrient.name} {nutrient.amount}{nutrient.unit}
+          </span>
+          {nutrient.daily_value !== null && (
+            <span className="font-bold">{Math.round(nutrient.daily_value)}%</span>
+          )}
+        </div>
+      ))}
+
+      {/* Footer */}
+      <div className="text-xs mt-2 pt-2 border-t border-black">
+        *Percent Daily Values are based on a 2,000 calorie diet.
+      </div>
+      <div className="text-xs text-gray-500 mt-1">
+        Source: USDA FoodData Central
+        {nutrition.cached && <span className="ml-2">(cached)</span>}
+      </div>
+    </div>
+  );
+}

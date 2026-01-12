@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { Plus, Minus, ShoppingCart } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import ProductDetailModal from './ProductDetailModal';
 
 export default function ProductCard({ product }) {
   const [quantity, setQuantity] = useState(1);
+  const [showModal, setShowModal] = useState(false);
   const { addItem } = useCart();
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e) => {
+    e.stopPropagation();
     addItem(product, quantity);
     setQuantity(1);
   };
@@ -25,7 +28,11 @@ export default function ProductCard({ product }) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+    <>
+    <div
+      className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+      onClick={() => setShowModal(true)}
+    >
       {/* Product Image */}
       <div className="h-32 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden">
         {product.image_url ? (
@@ -77,7 +84,7 @@ export default function ProductCard({ product }) {
         <div className="mt-4 flex items-center gap-2">
           <div className="flex items-center border border-gray-300 rounded-lg">
             <button
-              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              onClick={(e) => { e.stopPropagation(); setQuantity(Math.max(1, quantity - 1)); }}
               className="p-2 hover:bg-gray-100 rounded-l-lg"
             >
               <Minus className="w-4 h-4" />
@@ -85,11 +92,12 @@ export default function ProductCard({ product }) {
             <input
               type="number"
               value={quantity}
+              onClick={(e) => e.stopPropagation()}
               onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
               className="w-12 text-center border-x border-gray-300 py-1 focus:outline-none"
             />
             <button
-              onClick={() => setQuantity(quantity + 1)}
+              onClick={(e) => { e.stopPropagation(); setQuantity(quantity + 1); }}
               className="p-2 hover:bg-gray-100 rounded-r-lg"
             >
               <Plus className="w-4 h-4" />
@@ -105,5 +113,12 @@ export default function ProductCard({ product }) {
         </div>
       </div>
     </div>
+
+    <ProductDetailModal
+      product={product}
+      isOpen={showModal}
+      onClose={() => setShowModal(false)}
+    />
+    </>
   );
 }

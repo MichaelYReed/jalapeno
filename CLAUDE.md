@@ -91,10 +91,11 @@ Prerequisites: AWS CLI, AWS Copilot CLI, Docker, configured AWS credentials with
 ### Backend
 
 - **main.py** - FastAPI entry point. Loads `.env` before other imports (critical for OpenAI key).
-- **database.py** - SQLAlchemy models: `Product`, `Order`, `OrderItem`
+- **database.py** - SQLAlchemy models: `Product`, `Order`, `OrderItem`, `NutritionCache`
 - **models.py** - Pydantic schemas for request/response validation
 - **routers/** - API endpoints split by domain (catalog, orders, ai_assistant)
 - **services/ai_service.py** - OpenAI integration with lazy client initialization via `get_client()`
+- **services/nutrition_service.py** - USDA FoodData Central API integration with caching and query optimization
 
 The AI service uses GPT-4o-mini for chat (returns JSON with product matches) and Whisper for voice transcription.
 
@@ -103,7 +104,10 @@ The AI service uses GPT-4o-mini for chat (returns JSON with product matches) and
 - **App.jsx** - Main component with tab navigation (Catalog, AI Assistant, Orders)
 - **context/CartContext.jsx** - Global cart state using React Context + useReducer
 - **services/api.js** - API client for all backend calls
-- **components/** - Organized by feature (Catalog, Cart, AIAssistant, Orders)
+- **components/** - Organized by feature (Catalog, Cart, AIAssistant, Orders, UI)
+- **components/UI/Modal.jsx** - Reusable modal component with backdrop and keyboard handling
+- **components/Catalog/ProductDetailModal.jsx** - Product detail modal with nutrition facts
+- **components/Catalog/NutritionFacts.jsx** - FDA-style nutrition label component
 
 Vite config proxies `/api` to `localhost:8000` for seamless backend communication.
 
@@ -112,7 +116,20 @@ Vite config proxies `/api` to `localhost:8000` for seamless backend communicatio
 - **database.py** - SQLAlchemy with environment-based DATABASE_URL
 - Supports PostgreSQL (production/Docker) and SQLite (local development fallback)
 - `DATABASE_URL` or `DB_SECRET` (AWS Secrets Manager JSON) controls which database is used
-- **seed_db.py** - Auto-seeds 78 products on startup if empty, or updates missing images for existing products
+- **seed_db.py** - Auto-seeds 78 products on startup if empty, or updates missing images/flags for existing products
+- Products have `is_food` flag: 1 = food item (has nutrition data), 0 = non-food supplies (no nutrition lookup)
+
+### Nutrition Service
+
+The nutrition service (`services/nutrition_service.py`) fetches data from USDA FoodData Central API:
+
+- **Query optimization**: Simplifies product names by removing sizes, descriptors, and special characters
+- **Special mappings**: Maps problematic product names to better USDA search terms (e.g., "yellow onions" → "onion raw")
+- **Fallback search**: Tries multiple query variations, then falls back to branded foods if needed
+- **Caching**: Stores results in `NutritionCache` table for 30 days to avoid repeated API calls
+- **Non-food handling**: Products with `is_food=0` skip API lookup and return "non-food item" response
+
+All 71 food products have nutrition data; 7 supplies items are correctly flagged as non-food.
 
 ### Docker
 
@@ -168,6 +185,7 @@ The fetch script skips products that already have images. Unsplash free tier all
 |----------|--------|-------------|
 | `/api/products` | GET | List products (supports `search`, `category`, `subcategory` params) |
 | `/api/products/{id}` | GET | Get single product |
+| `/api/products/{id}/nutrition` | GET | Get nutrition facts from USDA FoodData Central |
 | `/api/categories` | GET | List categories with subcategories |
 | `/api/orders` | GET/POST | List or create orders |
 | `/api/chat` | POST | AI chat for natural language ordering |
@@ -179,11 +197,12 @@ The fetch script skips products that already have images. Unsplash free tier all
 | Variable | Description | Required |
 |----------|-------------|----------|
 | `OPENAI_API_KEY` | OpenAI API key for chat and voice | Yes |
+| `USDA_API_KEY` | USDA FoodData Central API key for nutrition data | Yes |
 | `DATABASE_URL` | PostgreSQL connection string | Production only |
 | `DB_SECRET` | AWS Secrets Manager JSON (alternative to DATABASE_URL) | AWS only |
 | `VITE_API_URL` | Backend API URL for frontend builds | Production only |
 
-Local development uses SQLite by default if `DATABASE_URL` is not set.
+Local development uses SQLite by default if `DATABASE_URL` is not set. Get USDA API key at https://fdc.nal.usda.gov/api-key-signup.html
 
 ## AWS Architecture
 
@@ -208,6 +227,7 @@ Local development uses SQLite by default if `DATABASE_URL` is not set.
 
 AWS resources are managed by Copilot. Secrets stored in SSM Parameter Store at:
 - `/copilot/jalapeno/prod/secrets/OPENAI_API_KEY`
+- `/copilot/jalapeno/prod/secrets/USDA_API_KEY`
 
 **Live URLs:**
 - Frontend: http://jalapeno-frontend-prod.s3-website-us-east-1.amazonaws.com

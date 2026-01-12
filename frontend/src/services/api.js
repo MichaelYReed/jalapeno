@@ -19,6 +19,12 @@ export const api = {
     return response.json();
   },
 
+  async getNutrition(productId) {
+    const response = await fetch(`${API_BASE}/products/${productId}/nutrition`);
+    if (!response.ok) throw new Error('Failed to fetch nutrition');
+    return response.json();
+  },
+
   async getCategories() {
     const response = await fetch(`${API_BASE}/categories`);
     if (!response.ok) throw new Error('Failed to fetch categories');

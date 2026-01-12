@@ -23,19 +23,26 @@ def seed_products():
     # Check if products already exist
     existing_count = db.query(Product).count()
     if existing_count > 0:
-        # Update image_urls for existing products that are missing images
-        updated = 0
+        # Update image_urls and is_food for existing products
+        updated_images = 0
+        updated_is_food = 0
         for product_data in data["products"]:
-            if product_data.get("image_url"):
-                existing = db.query(Product).filter(Product.name == product_data["name"]).first()
-                if existing and not existing.image_url:
+            existing = db.query(Product).filter(Product.name == product_data["name"]).first()
+            if existing:
+                # Update image if missing
+                if product_data.get("image_url") and not existing.image_url:
                     existing.image_url = product_data["image_url"]
-                    updated += 1
-        if updated > 0:
+                    updated_images += 1
+                # Update is_food flag
+                is_food_value = product_data.get("is_food", 1)
+                if existing.is_food != is_food_value:
+                    existing.is_food = is_food_value
+                    updated_is_food += 1
+        if updated_images > 0 or updated_is_food > 0:
             db.commit()
-            print(f"Updated {updated} product images.")
+            print(f"Updated {updated_images} product images, {updated_is_food} is_food flags.")
         else:
-            print(f"Database already has {existing_count} products with images.")
+            print(f"Database already has {existing_count} products, all up to date.")
         db.close()
         return
 
@@ -49,7 +56,8 @@ def seed_products():
             unit=product_data["unit"],
             price=product_data["price"],
             image_url=product_data.get("image_url"),
-            in_stock=1
+            in_stock=1,
+            is_food=product_data.get("is_food", 1)
         )
         db.add(product)
 

@@ -12,6 +12,7 @@ class ProductBase(BaseModel):
     unit: str
     price: float
     image_url: Optional[str] = None
+    is_food: Optional[int] = 1  # 1 = food item, 0 = non-food (supplies)
 
 
 class ProductCreate(ProductBase):
@@ -83,3 +84,25 @@ class ChatResponse(BaseModel):
 
 class VoiceRequest(BaseModel):
     audio_base64: str  # Base64 encoded audio data
+
+
+# Nutrition schemas
+class NutrientInfo(BaseModel):
+    name: str
+    amount: float
+    unit: str
+    daily_value: Optional[float] = None
+
+
+class NutritionResponse(BaseModel):
+    fdc_id: Optional[int] = None
+    serving_size: Optional[str] = None
+    calories: Optional[float] = None
+    nutrients: List[NutrientInfo] = []
+    source: str = "USDA FoodData Central"
+    cached: bool = False
+    error: Optional[str] = None
+    is_non_food: Optional[bool] = None
+    matched_query: Optional[str] = None
+    usda_description: Optional[str] = None
+    queries_tried: Optional[List[str]] = None

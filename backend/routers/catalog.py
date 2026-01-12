@@ -4,7 +4,8 @@ from sqlalchemy import or_
 from typing import Optional, List
 
 from database import get_db, Product
-from models import ProductResponse
+from models import ProductResponse, NutritionResponse
+from services.nutrition_service import get_nutrition_for_product
 
 router = APIRouter()
 
@@ -47,6 +48,25 @@ async def get_product(product_id: int, db: Session = Depends(get_db)):
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     return product
+
+
+@router.get("/products/{product_id}/nutrition", response_model=NutritionResponse)
+async def get_product_nutrition(product_id: int, db: Session = Depends(get_db)):
+    """Get nutrition data for a specific product from USDA FoodData Central"""
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    # Check if this is a non-food item (is_food = 0)
+    if not product.is_food:
+        return NutritionResponse(
+            error="This is a non-food item without nutritional data",
+            is_non_food=True,
+            cached=False
+        )
+
+    nutrition = await get_nutrition_for_product(product.name)
+    return NutritionResponse(**nutrition)
 
 
 @router.get("/categories")

@@ -54,6 +54,7 @@ class Product(Base):
     price = Column(Float, nullable=False)
     image_url = Column(String(500))
     in_stock = Column(Integer, default=1)
+    is_food = Column(Integer, default=1)  # 1 = food item with nutrition, 0 = non-food (supplies)
 
 
 class Order(Base):
@@ -78,6 +79,17 @@ class OrderItem(Base):
 
     order = relationship("Order", back_populates="items")
     product = relationship("Product")
+
+
+class NutritionCache(Base):
+    """Cache for USDA nutrition data to avoid repeated API calls"""
+    __tablename__ = "nutrition_cache"
+
+    id = Column(Integer, primary_key=True, index=True)
+    product_name = Column(String(200), nullable=False, unique=True, index=True)
+    fdc_id = Column(Integer)  # USDA FoodData Central ID
+    nutrition_data = Column(Text)  # JSON string of nutrition info
+    fetched_at = Column(DateTime, default=datetime.utcnow)
 
 
 def get_db():
