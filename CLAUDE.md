@@ -112,7 +112,7 @@ Vite config proxies `/api` to `localhost:8000` for seamless backend communicatio
 - **database.py** - SQLAlchemy with environment-based DATABASE_URL
 - Supports PostgreSQL (production/Docker) and SQLite (local development fallback)
 - `DATABASE_URL` or `DB_SECRET` (AWS Secrets Manager JSON) controls which database is used
-- Auto-seeds 78 products on startup if database is empty
+- **seed_db.py** - Auto-seeds 78 products on startup if empty, or updates missing images for existing products
 
 ### Docker
 
@@ -136,6 +136,7 @@ Vite config proxies `/api` to `localhost:8000` for seamless backend communicatio
 |------|---------|
 | `.env` | Environment variables for Docker (OPENAI_API_KEY) |
 | `backend/data/seed_products.json` | 78 food products with image URLs |
+| `backend/seed_db.py` | Database seeding and image update script |
 | `backend/fetch_images.py` | Script to fetch product images from Unsplash |
 | `backend/database.py` | SQLAlchemy setup with PostgreSQL/SQLite support |
 | `frontend/vite.config.js` | Dev server proxy configuration |
@@ -148,19 +149,18 @@ Vite config proxies `/api` to `localhost:8000` for seamless backend communicatio
 
 ## Product Images
 
-Product images are fetched from Unsplash API and stored in `seed_products.json`.
+All 78 products have images fetched from Unsplash API and stored in `seed_products.json`.
 
 ```bash
 # Fetch/update images (requires Unsplash API key in script)
 cd backend
 python fetch_images.py
 
-# Re-seed database after updating images
-docker exec leonintro-backend-1 python -c "from database import SessionLocal, Product; db=SessionLocal(); db.query(Product).delete(); db.commit()"
-docker exec leonintro-backend-1 python seed_db.py
+# Redeploy backend to update images (seed script auto-updates on startup)
+copilot svc deploy --name backend --env prod
 ```
 
-The script skips products that already have images. Unsplash free tier allows 50 requests/hour.
+The fetch script skips products that already have images. Unsplash free tier allows 50 requests/hour. The seed script automatically updates missing image URLs for existing products on startup.
 
 ## API Endpoints
 
