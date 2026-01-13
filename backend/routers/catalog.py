@@ -6,6 +6,10 @@ from typing import Optional, List
 from database import get_db, Product
 from models import ProductResponse, NutritionResponse
 from services.nutrition_service import get_nutrition_for_product
+from services.cache import (
+    cache_get, cache_set, cache_key_hash,
+    CACHE_TTL_PRODUCTS, CACHE_TTL_PRODUCT_DETAIL, CACHE_TTL_CATEGORIES
+)
 
 router = APIRouter()
 
@@ -20,6 +24,13 @@ async def get_products(
     db: Session = Depends(get_db)
 ):
     """Get all products with optional filtering"""
+    # Try cache first
+    cache_key = f"catalog:products:{cache_key_hash(search, category, subcategory, skip, limit)}"
+    cached = cache_get(cache_key)
+    if cached is not None:
+        return cached
+
+    # Query database
     query = db.query(Product)
 
     if search:
@@ -37,17 +48,63 @@ async def get_products(
     if subcategory:
         query = query.filter(Product.subcategory == subcategory)
 
+    # Sort by category, then subcategory, then name for consistent ordering
+    query = query.order_by(Product.category, Product.subcategory, Product.name)
+
     products = query.offset(skip).limit(limit).all()
-    return products
+
+    # Convert to dict for caching
+    result = [
+        {
+            "id": p.id,
+            "name": p.name,
+            "description": p.description,
+            "category": p.category,
+            "subcategory": p.subcategory,
+            "unit": p.unit,
+            "price": p.price,
+            "image_url": p.image_url,
+            "in_stock": p.in_stock
+        }
+        for p in products
+    ]
+
+    # Cache result
+    cache_set(cache_key, result, CACHE_TTL_PRODUCTS)
+
+    return result
 
 
 @router.get("/products/{product_id}", response_model=ProductResponse)
 async def get_product(product_id: int, db: Session = Depends(get_db)):
     """Get a specific product by ID"""
+    # Try cache first
+    cache_key = f"catalog:product:{product_id}"
+    cached = cache_get(cache_key)
+    if cached is not None:
+        return cached
+
     product = db.query(Product).filter(Product.id == product_id).first()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
-    return product
+
+    # Convert to dict for caching
+    result = {
+        "id": product.id,
+        "name": product.name,
+        "description": product.description,
+        "category": product.category,
+        "subcategory": product.subcategory,
+        "unit": product.unit,
+        "price": product.price,
+        "image_url": product.image_url,
+        "in_stock": product.in_stock
+    }
+
+    # Cache result
+    cache_set(cache_key, result, CACHE_TTL_PRODUCT_DETAIL)
+
+    return result
 
 
 @router.get("/products/{product_id}/nutrition", response_model=NutritionResponse)
@@ -72,6 +129,12 @@ async def get_product_nutrition(product_id: int, db: Session = Depends(get_db)):
 @router.get("/categories")
 async def get_categories(db: Session = Depends(get_db)):
     """Get all categories with their subcategories"""
+    # Try cache first
+    cache_key = "catalog:categories"
+    cached = cache_get(cache_key)
+    if cached is not None:
+        return cached
+
     products = db.query(Product.category, Product.subcategory).distinct().all()
 
     categories = {}
@@ -81,10 +144,15 @@ async def get_categories(db: Session = Depends(get_db)):
         if subcategory and subcategory not in categories[category]:
             categories[category].append(subcategory)
 
-    return [
+    result = [
         {"name": cat, "subcategories": sorted(subs)}
         for cat, subs in sorted(categories.items())
     ]
+
+    # Cache result
+    cache_set(cache_key, result, CACHE_TTL_CATEGORIES)
+
+    return result
 
 
 @router.get("/products/search/autocomplete")

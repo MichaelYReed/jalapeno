@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Mic, MicOff, Plus, Loader2 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useCart } from '../../context/CartContext';
@@ -93,29 +94,33 @@ export default function Chat() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-lg shadow-sm dark:shadow-slate-800/50 border border-gray-200 dark:border-slate-700 overflow-hidden">
         {/* Chat Header */}
-        <div className="bg-primary-500 text-white p-4">
+        <div className="bg-primary-500 dark:bg-primary-600 text-white p-4">
           <h2 className="font-semibold text-lg">AI Ordering Assistant</h2>
-          <p className="text-sm text-primary-100">
+          <p className="text-sm text-primary-100 dark:text-primary-200">
             Describe what you need in natural language
           </p>
         </div>
 
         {/* Messages */}
         <div className="h-96 overflow-y-auto p-4 space-y-4">
-          {messages.map((message, index) => (
-            <div
-              key={index}
-              className={`chat-message flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-[80%] rounded-lg p-3 ${
-                  message.role === 'user'
-                    ? 'bg-primary-500 text-white'
-                    : 'bg-gray-100 text-gray-800'
-                }`}
+          <AnimatePresence>
+            {messages.map((message, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
+                <div
+                  className={`max-w-[80%] rounded-lg p-3 ${
+                    message.role === 'user'
+                      ? 'bg-primary-500 text-white'
+                      : 'bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-gray-200'
+                  }`}
+                >
                 {message.isVoice && (
                   <div className="flex items-center gap-1 text-xs opacity-75 mb-1">
                     <Mic className="w-3 h-3" /> Voice
@@ -129,13 +134,13 @@ export default function Chat() {
                     {message.suggestions.map((suggestion, i) => (
                       <div
                         key={i}
-                        className="bg-white rounded-lg p-3 border border-gray-200 flex items-center gap-3"
+                        className="bg-white dark:bg-slate-700 rounded-lg p-3 border border-gray-200 dark:border-slate-600 flex items-center gap-3"
                       >
                         <div className="flex-1">
-                          <p className="font-medium text-sm text-gray-900">
+                          <p className="font-medium text-sm text-gray-900 dark:text-gray-100">
                             {suggestion.product.name}
                           </p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
                             ${suggestion.product.price.toFixed(2)} / {suggestion.product.unit}
                             {' • '}
                             Qty: {suggestion.suggested_quantity}
@@ -152,17 +157,25 @@ export default function Chat() {
                   </div>
                 )}
               </div>
-            </div>
+            </motion.div>
           ))}
+          </AnimatePresence>
 
-          {loading && (
-            <div className="flex justify-start">
-              <div className="bg-gray-100 rounded-lg p-3 flex items-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span className="text-gray-600">Thinking...</span>
-              </div>
-            </div>
-          )}
+          <AnimatePresence>
+            {loading && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="flex justify-start"
+              >
+                <div className="bg-gray-100 dark:bg-slate-800 rounded-lg p-3 flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin dark:text-gray-200" />
+                  <span className="text-gray-600 dark:text-gray-400">Thinking...</span>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div ref={messagesEndRef} />
         </div>
@@ -170,13 +183,13 @@ export default function Chat() {
         {/* Quick Suggestions */}
         {messages.length <= 1 && suggestions.length > 0 && (
           <div className="px-4 pb-2">
-            <p className="text-xs text-gray-500 mb-2">Try saying:</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Try saying:</p>
             <div className="flex flex-wrap gap-2">
               {suggestions.slice(0, 3).map((suggestion, i) => (
                 <button
                   key={i}
                   onClick={() => handleSend(suggestion)}
-                  className="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-full transition-colors"
+                  className="text-xs bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 dark:text-gray-200 px-3 py-1.5 rounded-full transition-colors"
                 >
                   {suggestion}
                 </button>
@@ -186,7 +199,7 @@ export default function Chat() {
         )}
 
         {/* Input Area */}
-        <div className="p-4 border-t">
+        <div className="p-4 border-t dark:border-slate-700">
           <div className="flex items-center gap-2">
             <VoiceInput onResult={handleVoiceResult} disabled={loading} />
             <input
@@ -196,12 +209,12 @@ export default function Chat() {
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
               placeholder="Type your order or question..."
               disabled={loading}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none disabled:bg-gray-50"
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:border-primary-400 outline-none disabled:bg-gray-50 dark:disabled:bg-slate-700 placeholder:text-gray-400 dark:placeholder:text-gray-500"
             />
             <button
               onClick={() => handleSend()}
               disabled={loading || !input.trim()}
-              className="bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 text-white p-2 rounded-lg transition-colors"
+              className="bg-primary-500 hover:bg-primary-600 disabled:bg-gray-300 dark:disabled:bg-slate-700 text-white p-2 rounded-lg transition-colors"
             >
               <Send className="w-5 h-5" />
             </button>

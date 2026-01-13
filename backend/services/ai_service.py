@@ -6,6 +6,7 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 
 from database import Product
+from services.cache import cache_get, cache_set, CACHE_TTL_AI_CONTEXT
 
 # Lazy client initialization
 _client = None
@@ -50,12 +51,24 @@ Be friendly, helpful, and efficient. If you're not sure about something, ask!"""
 
 
 def get_product_catalog_context(db: Session) -> str:
-    """Get a summary of available products for the AI context"""
+    """Get a summary of available products for the AI context (cached)"""
+    # Try cache first
+    cache_key = "ai:catalog_context"
+    cached = cache_get(cache_key)
+    if cached is not None:
+        return cached
+
+    # Build catalog context from database
     products = db.query(Product).all()
     catalog = []
     for p in products:
         catalog.append(f"- {p.name} ({p.category}/{p.subcategory}): ${p.price}/{p.unit}")
-    return "Available products:\n" + "\n".join(catalog)
+    result = "Available products:\n" + "\n".join(catalog)
+
+    # Cache result
+    cache_set(cache_key, result, CACHE_TTL_AI_CONTEXT)
+
+    return result
 
 
 async def process_chat_message(

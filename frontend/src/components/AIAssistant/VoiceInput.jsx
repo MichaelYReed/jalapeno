@@ -86,8 +86,8 @@ export default function VoiceInput({ onResult, disabled }) {
         recording
           ? 'bg-red-500 hover:bg-red-600 text-white recording-pulse'
           : processing
-          ? 'bg-gray-300 text-gray-500'
-          : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+          ? 'bg-gray-300 dark:bg-slate-700 text-gray-500 dark:text-gray-400'
+          : 'bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-200'
       }`}
       title={recording ? 'Stop recording' : 'Start voice input'}
     >
