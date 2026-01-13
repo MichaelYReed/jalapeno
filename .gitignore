@@ -40,3 +40,7 @@ build/
 
 # Claude
 .claude/
+
+# Generated/temporary files
+bucket-policy.json
+*-read-the-claudemd-file.txt
