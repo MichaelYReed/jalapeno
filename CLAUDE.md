@@ -65,7 +65,7 @@ Docker runs PostgreSQL, backend, and frontend. Frontend at http://localhost:80, 
 
 ### AWS Deployment (from project root)
 
-Uses AWS Copilot for ECS Fargate deployment with RDS PostgreSQL.
+Uses AWS Copilot for ECS Fargate deployment with RDS PostgreSQL and CloudFront for HTTPS.
 
 ```powershell
 # Check prerequisites
@@ -79,7 +79,8 @@ Uses AWS Copilot for ECS Fargate deployment with RDS PostgreSQL.
 .\deploy-aws.ps1 env        # Create prod environment
 .\deploy-aws.ps1 secrets    # Store OpenAI API key
 .\deploy-aws.ps1 backend    # Deploy backend service
-.\deploy-aws.ps1 frontend   # Deploy frontend to S3
+.\deploy-aws.ps1 frontend   # Deploy frontend to S3 + CloudFront (HTTPS)
+.\deploy-aws.ps1 cloudfront # Update CloudFront distribution only
 .\deploy-aws.ps1 status     # Show deployment status
 .\deploy-aws.ps1 delete     # Remove all AWS resources
 ```
@@ -207,28 +208,41 @@ Local development uses SQLite by default if `DATABASE_URL` is not set. Get USDA 
 ## AWS Architecture
 
 ```
-┌─────────────────┐     ┌─────────────────┐
-│   S3 Bucket     │     │ Application     │
-│   (Frontend)    │     │ Load Balancer   │
-└─────────────────┘     └────────┬────────┘
-                                 │
-                                 ▼
                         ┌─────────────────┐
-                        │   ECS Fargate   │
-                        │   (Backend)     │
+                        │   CloudFront    │ ← HTTPS
+                        │   (CDN + SSL)   │
                         └────────┬────────┘
                                  │
-                                 ▼
-                        ┌─────────────────┐
-                        │  RDS PostgreSQL │
-                        │   (db.t3.micro) │
-                        └─────────────────┘
+                    ┌────────────┴────────────┐
+                    │                         │
+                    ▼                         ▼
+           ┌─────────────────┐     ┌─────────────────┐
+           │   S3 Bucket     │     │ Application     │
+           │   (Frontend)    │     │ Load Balancer   │
+           └─────────────────┘     └────────┬────────┘
+                                            │
+                                            ▼
+                                   ┌─────────────────┐
+                                   │   ECS Fargate   │
+                                   │   (Backend)     │
+                                   └────────┬────────┘
+                                            │
+                                            ▼
+                                   ┌─────────────────┐
+                                   │  RDS PostgreSQL │
+                                   │   (db.t3.micro) │
+                                   └─────────────────┘
 ```
+
+CloudFront serves the frontend over HTTPS and proxies `/api/*` requests to the backend ALB. This provides:
+- HTTPS/TLS encryption
+- Edge caching for static assets
+- SPA routing (404 → index.html)
 
 AWS resources are managed by Copilot. Secrets stored in SSM Parameter Store at:
 - `/copilot/jalapeno/prod/secrets/OPENAI_API_KEY`
 - `/copilot/jalapeno/prod/secrets/USDA_API_KEY`
 
 **Live URLs:**
-- Frontend: http://jalapeno-frontend-prod.s3-website-us-east-1.amazonaws.com
+- Frontend (HTTPS): https://dknu09xe73cdt.cloudfront.net
 - Backend API: http://jalape-Publi-n1Sr6QWCeWpE-323367462.us-east-1.elb.amazonaws.com
