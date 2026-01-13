@@ -105,3 +105,34 @@ def init_db():
     if DATABASE_URL.startswith("sqlite"):
         os.makedirs("data", exist_ok=True)
     Base.metadata.create_all(bind=engine)
+
+    # Run migrations for existing databases
+    _run_migrations()
+
+
+def _run_migrations():
+    """Add missing columns to existing tables and fix data issues"""
+    from sqlalchemy import text
+
+    with engine.connect() as conn:
+        # Check if is_food column exists, add if missing
+        if DATABASE_URL.startswith("postgresql"):
+            result = conn.execute(text("""
+                SELECT column_name FROM information_schema.columns
+                WHERE table_name = 'products' AND column_name = 'is_food'
+            """))
+            if not result.fetchone():
+                conn.execute(text("ALTER TABLE products ADD COLUMN is_food INTEGER DEFAULT 1"))
+                conn.commit()
+                print("Added is_food column to products table")
+
+            # Fix mismatched product images
+            image_fixes = [
+                ("Tilapia Fillet", "https://images.unsplash.com/photo-1713759980610-5a3b72d7f9d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400"),
+                ("Russet Potatoes", "https://images.unsplash.com/photo-1518977676601-b53f82aba655?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400"),
+                ("Baby Spinach", "https://images.unsplash.com/photo-1519995672084-d21490e86ba6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400"),
+            ]
+            for name, url in image_fixes:
+                conn.execute(text("UPDATE products SET image_url = :url WHERE name = :name"), {"url": url, "name": name})
+            conn.commit()
+            print("Fixed product images")
