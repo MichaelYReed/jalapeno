@@ -1,0 +1,6 @@
+# Copy this file to terraform.tfvars and fill in the values
+# DO NOT commit terraform.tfvars to version control
+
+aws_region     = "us-east-1"
+db_password    = "your_secure_database_password_here"
+openai_api_key = "sk-your-openai-api-key-here"
