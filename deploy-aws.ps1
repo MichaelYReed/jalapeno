@@ -126,7 +126,7 @@ function Deploy-Backend {
     Pop-Location
 }
 
-# Deploy frontend to S3
+# Deploy frontend to S3 with CloudFront
 function Deploy-Frontend {
     Write-Step "Deploying frontend..."
 
@@ -141,11 +141,17 @@ function Deploy-Frontend {
     Write-Step "Building frontend..."
     npm run build
 
-    # Create S3 bucket
-    $bucketName = "jalapeno-frontend-$(Get-Random -Maximum 99999)"
+    # Use consistent bucket name
+    $bucketName = "jalapeno-frontend-prod"
 
-    Write-Step "Creating S3 bucket: $bucketName"
-    aws s3 mb "s3://$bucketName"
+    # Check if bucket exists
+    $bucketExists = aws s3api head-bucket --bucket $bucketName 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        Write-Step "Creating S3 bucket: $bucketName"
+        aws s3 mb "s3://$bucketName" --region us-east-1
+    } else {
+        Write-Host "Using existing bucket: $bucketName"
+    }
 
     # Configure for static hosting
     aws s3 website "s3://$bucketName" --index-document index.html --error-document index.html
@@ -154,7 +160,7 @@ function Deploy-Frontend {
     Write-Step "Uploading to S3..."
     aws s3 sync dist/ "s3://$bucketName/" --delete
 
-    # Make public
+    # Make public (required for CloudFront with S3 website endpoint)
     $policy = @"
 {
     "Version": "2012-10-17",
@@ -169,12 +175,159 @@ function Deploy-Frontend {
 "@
 
     aws s3api put-public-access-block --bucket $bucketName --public-access-block-configuration "BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false"
-    $policy | aws s3api put-bucket-policy --bucket $bucketName --policy file:///dev/stdin
+
+    # Write policy to temp file (Windows compatible)
+    $policyFile = [System.IO.Path]::GetTempFileName()
+    [System.IO.File]::WriteAllText($policyFile, $policy, [System.Text.UTF8Encoding]::new($false))
+    aws s3api put-bucket-policy --bucket $bucketName --policy "file://$policyFile"
+    Remove-Item $policyFile
 
     Pop-Location
 
-    Write-Success "Frontend deployed!"
-    Write-Host "Frontend URL: http://$bucketName.s3-website-us-east-1.amazonaws.com"
+    # Now set up CloudFront
+    Deploy-CloudFront -BucketName $bucketName -BackendUrl $backendUrl
+}
+
+# Deploy CloudFront distribution
+function Deploy-CloudFront {
+    param(
+        [string]$BucketName = "jalapeno-frontend-prod",
+        [string]$BackendUrl
+    )
+
+    Write-Step "Setting up CloudFront distribution..."
+
+    # Extract ALB domain from backend URL
+    if (-not $BackendUrl) {
+        $BackendUrl = copilot svc show --name backend --json | ConvertFrom-Json | Select-Object -ExpandProperty routes | Select-Object -First 1 -ExpandProperty url
+    }
+    $albDomain = ($BackendUrl -replace "^https?://", "") -replace "/.*$", ""
+    Write-Host "ALB Domain: $albDomain"
+
+    # Check if distribution already exists
+    $existingDist = aws cloudfront list-distributions --query "DistributionList.Items[?Comment=='jalapeno-frontend'].{Id:Id,Domain:DomainName}" --output json | ConvertFrom-Json
+
+    if ($existingDist -and $existingDist.Count -gt 0) {
+        Write-Host "CloudFront distribution already exists: $($existingDist[0].Domain)"
+        Write-Host "Distribution ID: $($existingDist[0].Id)"
+        Write-Success "Frontend URL: https://$($existingDist[0].Domain)"
+
+        # Invalidate cache
+        Write-Step "Invalidating CloudFront cache..."
+        aws cloudfront create-invalidation --distribution-id $existingDist[0].Id --paths "/*" | Out-Null
+        Write-Success "Cache invalidation started"
+        return
+    }
+
+    # Create CloudFront distribution config
+    $s3Origin = "$BucketName.s3-website-us-east-1.amazonaws.com"
+
+    $distConfig = @"
+{
+    "CallerReference": "jalapeno-$(Get-Date -Format 'yyyyMMddHHmmss')",
+    "Comment": "jalapeno-frontend",
+    "Enabled": true,
+    "DefaultRootObject": "index.html",
+    "Origins": {
+        "Quantity": 2,
+        "Items": [
+            {
+                "Id": "S3-frontend",
+                "DomainName": "$s3Origin",
+                "CustomOriginConfig": {
+                    "HTTPPort": 80,
+                    "HTTPSPort": 443,
+                    "OriginProtocolPolicy": "http-only",
+                    "OriginSslProtocols": { "Quantity": 1, "Items": ["TLSv1.2"] }
+                }
+            },
+            {
+                "Id": "ALB-backend",
+                "DomainName": "$albDomain",
+                "CustomOriginConfig": {
+                    "HTTPPort": 80,
+                    "HTTPSPort": 443,
+                    "OriginProtocolPolicy": "http-only",
+                    "OriginSslProtocols": { "Quantity": 1, "Items": ["TLSv1.2"] }
+                }
+            }
+        ]
+    },
+    "DefaultCacheBehavior": {
+        "TargetOriginId": "S3-frontend",
+        "ViewerProtocolPolicy": "redirect-to-https",
+        "AllowedMethods": {
+            "Quantity": 2,
+            "Items": ["GET", "HEAD"],
+            "CachedMethods": { "Quantity": 2, "Items": ["GET", "HEAD"] }
+        },
+        "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+        "Compress": true
+    },
+    "CacheBehaviors": {
+        "Quantity": 1,
+        "Items": [
+            {
+                "PathPattern": "/api/*",
+                "TargetOriginId": "ALB-backend",
+                "ViewerProtocolPolicy": "redirect-to-https",
+                "AllowedMethods": {
+                    "Quantity": 7,
+                    "Items": ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
+                    "CachedMethods": { "Quantity": 2, "Items": ["GET", "HEAD"] }
+                },
+                "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+                "OriginRequestPolicyId": "216adef6-5c7f-47e4-b989-5492eafa07d3",
+                "Compress": true
+            }
+        ]
+    },
+    "CustomErrorResponses": {
+        "Quantity": 2,
+        "Items": [
+            {
+                "ErrorCode": 404,
+                "ResponsePagePath": "/index.html",
+                "ResponseCode": "200",
+                "ErrorCachingMinTTL": 0
+            },
+            {
+                "ErrorCode": 403,
+                "ResponsePagePath": "/index.html",
+                "ResponseCode": "200",
+                "ErrorCachingMinTTL": 0
+            }
+        ]
+    },
+    "PriceClass": "PriceClass_100",
+    "ViewerCertificate": {
+        "CloudFrontDefaultCertificate": true,
+        "MinimumProtocolVersion": "TLSv1.2_2021"
+    },
+    "HttpVersion": "http2"
+}
+"@
+
+    # Save config to temp file (UTF-8 without BOM for AWS CLI)
+    $tempFile = [System.IO.Path]::GetTempFileName()
+    [System.IO.File]::WriteAllText($tempFile, $distConfig, [System.Text.UTF8Encoding]::new($false))
+
+    Write-Step "Creating CloudFront distribution (this may take 5-10 minutes)..."
+    $result = aws cloudfront create-distribution --distribution-config "file://$tempFile" | ConvertFrom-Json
+
+    Remove-Item $tempFile
+
+    $distId = $result.Distribution.Id
+    $distDomain = $result.Distribution.DomainName
+
+    Write-Success "CloudFront distribution created!"
+    Write-Host "Distribution ID: $distId"
+    Write-Host "Distribution Domain: $distDomain"
+    Write-Host ""
+    Write-Host "Waiting for deployment (this takes 5-10 minutes)..."
+    Write-Host "You can check status with: aws cloudfront get-distribution --id $distId --query 'Distribution.Status'"
+    Write-Host ""
+    Write-Success "Frontend URL: https://$distDomain"
 }
 
 # Show status
@@ -212,15 +365,16 @@ function Remove-All {
 
 # Main
 switch ($Command) {
-    "check"     { Test-Prerequisites }
-    "init"      { Initialize-App }
-    "env"       { Initialize-Environment }
-    "secrets"   { Set-Secrets }
-    "backend"   { Deploy-Backend }
-    "frontend"  { Deploy-Frontend }
-    "status"    { Show-Status }
-    "deploy"    { Deploy-All }
-    "delete"    { Remove-All }
+    "check"      { Test-Prerequisites }
+    "init"       { Initialize-App }
+    "env"        { Initialize-Environment }
+    "secrets"    { Set-Secrets }
+    "backend"    { Deploy-Backend }
+    "frontend"   { Deploy-Frontend }
+    "cloudfront" { Deploy-CloudFront }
+    "status"     { Show-Status }
+    "deploy"     { Deploy-All }
+    "delete"     { Remove-All }
     default {
         Write-Host @"
 
@@ -229,15 +383,16 @@ Jalapeno AWS Deployment
 Usage: .\deploy-aws.ps1 <command>
 
 Commands:
-  check     - Verify prerequisites (AWS CLI, Copilot, Docker)
-  deploy    - Full deployment (recommended for first time)
-  init      - Initialize Copilot app only
-  env       - Create/deploy environment only
-  secrets   - Store OpenAI API key
-  backend   - Deploy backend service only
-  frontend  - Deploy frontend to S3 only
-  status    - Show deployment status
-  delete    - Remove all AWS resources
+  check      - Verify prerequisites (AWS CLI, Copilot, Docker)
+  deploy     - Full deployment (recommended for first time)
+  init       - Initialize Copilot app only
+  env        - Create/deploy environment only
+  secrets    - Store OpenAI API key
+  backend    - Deploy backend service only
+  frontend   - Deploy frontend to S3 + CloudFront (HTTPS)
+  cloudfront - Create/update CloudFront distribution only
+  status     - Show deployment status
+  delete     - Remove all AWS resources
 
 First time? Run:
   .\deploy-aws.ps1 check
