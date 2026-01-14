@@ -13,6 +13,7 @@ class ProductBase(BaseModel):
     price: float
     image_url: Optional[str] = None
     is_food: Optional[int] = 1  # 1 = food item, 0 = non-food (supplies)
+    barcode: Optional[str] = None
 
 
 class ProductCreate(ProductBase):

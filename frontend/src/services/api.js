@@ -25,6 +25,13 @@ export const api = {
     return response.json();
   },
 
+  async getProductByBarcode(barcode) {
+    const response = await fetch(`${API_BASE}/products/barcode/${encodeURIComponent(barcode)}`);
+    if (response.status === 404) return null;
+    if (!response.ok) throw new Error('Failed to lookup barcode');
+    return response.json();
+  },
+
   async getCategories() {
     const response = await fetch(`${API_BASE}/categories`);
     if (!response.ok) throw new Error('Failed to fetch categories');

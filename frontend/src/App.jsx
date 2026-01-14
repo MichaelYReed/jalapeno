@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, MessageSquare, Package, Menu, X, Moon, Sun } from 'lucide-react';
+import { ShoppingCart, MessageSquare, Package, Menu, X, Moon, Sun, Camera } from 'lucide-react';
 import ProductGrid from './components/Catalog/ProductGrid';
 import CategorySidebar from './components/Catalog/CategorySidebar';
 import CartDrawer from './components/Cart/CartDrawer';
 import Chat from './components/AIAssistant/Chat';
 import OrderHistory from './components/Orders/OrderHistory';
+import BarcodeScanner from './components/BarcodeScanner/BarcodeScanner';
 import { useCart } from './context/CartContext';
 import { useTheme } from './context/ThemeContext';
 
@@ -16,6 +17,7 @@ function App() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [scannerOpen, setScannerOpen] = useState(false);
   const { getItemCount } = useCart();
 
   const itemCount = getItemCount();
@@ -141,14 +143,21 @@ function App() {
 
           {/* Search Bar - Only show on catalog */}
           {activeTab === 'catalog' && (
-            <div className="mt-4">
+            <div className="mt-4 flex gap-2">
               <input
                 type="text"
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:border-primary-400 outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 transition-colors"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:border-primary-400 outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500 transition-colors"
               />
+              <button
+                onClick={() => setScannerOpen(true)}
+                className="p-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                title="Scan barcode"
+              >
+                <Camera className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+              </button>
             </div>
           )}
         </div>
@@ -252,6 +261,9 @@ function App() {
 
       {/* Cart Drawer */}
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
+
+      {/* Barcode Scanner */}
+      <BarcodeScanner isOpen={scannerOpen} onClose={() => setScannerOpen(false)} />
     </div>
   );
 }

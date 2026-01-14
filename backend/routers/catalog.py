@@ -6,6 +6,7 @@ from typing import Optional, List
 from database import get_db, Product
 from models import ProductResponse, NutritionResponse
 from services.nutrition_service import get_nutrition_for_product
+from services.barcode_service import lookup_external_barcode, search_similar_products
 from services.cache import (
     cache_get, cache_set, cache_key_hash,
     CACHE_TTL_PRODUCTS, CACHE_TTL_PRODUCT_DETAIL, CACHE_TTL_CATEGORIES
@@ -124,6 +125,60 @@ async def get_product_nutrition(product_id: int, db: Session = Depends(get_db)):
 
     nutrition = await get_nutrition_for_product(product.name)
     return NutritionResponse(**nutrition)
+
+
+@router.get("/products/barcode/{barcode}")
+async def get_product_by_barcode(barcode: str, db: Session = Depends(get_db)):
+    """Get a product by its barcode (EAN/UPC), with fallback to similar products"""
+    # Try cache first
+    cache_key = f"catalog:barcode:{barcode}"
+    cached = cache_get(cache_key)
+    if cached is not None:
+        return cached
+
+    # Try local database
+    product = db.query(Product).filter(Product.barcode == barcode).first()
+    if product:
+        result = {
+            "id": product.id,
+            "name": product.name,
+            "description": product.description,
+            "category": product.category,
+            "subcategory": product.subcategory,
+            "unit": product.unit,
+            "price": product.price,
+            "image_url": product.image_url,
+            "in_stock": product.in_stock,
+            "barcode": product.barcode
+        }
+        cache_set(cache_key, result, CACHE_TTL_PRODUCT_DETAIL)
+        return result
+
+    # Fallback: Look up external barcode database and search for similar products
+    external = await lookup_external_barcode(barcode)
+    if external and external.get("name"):
+        similar = search_similar_products(external["name"], db)
+        if similar:
+            return {
+                "found": False,
+                "external_name": external["name"],
+                "similar_products": [
+                    {
+                        "id": p.id,
+                        "name": p.name,
+                        "description": p.description,
+                        "category": p.category,
+                        "subcategory": p.subcategory,
+                        "price": p.price,
+                        "unit": p.unit,
+                        "image_url": p.image_url,
+                        "in_stock": p.in_stock
+                    }
+                    for p in similar
+                ]
+            }
+
+    raise HTTPException(status_code=404, detail="Product not found for this barcode")
 
 
 @router.get("/categories")

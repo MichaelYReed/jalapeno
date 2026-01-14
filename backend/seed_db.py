@@ -23,9 +23,11 @@ def seed_products():
     # Check if products already exist
     existing_count = db.query(Product).count()
     if existing_count > 0:
-        # Update image_urls and is_food for existing products
+        # Update existing products and add new ones
         updated_images = 0
         updated_is_food = 0
+        updated_barcodes = 0
+        added_products = 0
         for product_data in data["products"]:
             existing = db.query(Product).filter(Product.name == product_data["name"]).first()
             if existing:
@@ -38,9 +40,29 @@ def seed_products():
                 if existing.is_food != is_food_value:
                     existing.is_food = is_food_value
                     updated_is_food += 1
-        if updated_images > 0 or updated_is_food > 0:
+                # Update barcode if missing
+                if product_data.get("barcode") and not existing.barcode:
+                    existing.barcode = product_data["barcode"]
+                    updated_barcodes += 1
+            else:
+                # Add new product
+                product = Product(
+                    name=product_data["name"],
+                    description=product_data.get("description"),
+                    category=product_data["category"],
+                    subcategory=product_data.get("subcategory"),
+                    unit=product_data["unit"],
+                    price=product_data["price"],
+                    image_url=product_data.get("image_url"),
+                    in_stock=1,
+                    is_food=product_data.get("is_food", 1),
+                    barcode=product_data.get("barcode")
+                )
+                db.add(product)
+                added_products += 1
+        if updated_images > 0 or updated_is_food > 0 or updated_barcodes > 0 or added_products > 0:
             db.commit()
-            print(f"Updated {updated_images} product images, {updated_is_food} is_food flags.")
+            print(f"Updated {updated_images} images, {updated_is_food} is_food flags, {updated_barcodes} barcodes. Added {added_products} new products.")
         else:
             print(f"Database already has {existing_count} products, all up to date.")
         db.close()
@@ -57,7 +79,8 @@ def seed_products():
             price=product_data["price"],
             image_url=product_data.get("image_url"),
             in_stock=1,
-            is_food=product_data.get("is_food", 1)
+            is_food=product_data.get("is_food", 1),
+            barcode=product_data.get("barcode")
         )
         db.add(product)
 

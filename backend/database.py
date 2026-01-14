@@ -55,6 +55,7 @@ class Product(Base):
     image_url = Column(String(500))
     in_stock = Column(Integer, default=1)
     is_food = Column(Integer, default=1)  # 1 = food item with nutrition, 0 = non-food (supplies)
+    barcode = Column(String(50), unique=True, index=True, nullable=True)
 
 
 class Order(Base):
@@ -136,3 +137,14 @@ def _run_migrations():
                 conn.execute(text("UPDATE products SET image_url = :url WHERE name = :name"), {"url": url, "name": name})
             conn.commit()
             print("Fixed product images")
+
+            # Check if barcode column exists, add if missing
+            result = conn.execute(text("""
+                SELECT column_name FROM information_schema.columns
+                WHERE table_name = 'products' AND column_name = 'barcode'
+            """))
+            if not result.fetchone():
+                conn.execute(text("ALTER TABLE products ADD COLUMN barcode VARCHAR(50)"))
+                conn.execute(text("CREATE UNIQUE INDEX ix_products_barcode ON products(barcode) WHERE barcode IS NOT NULL"))
+                conn.commit()
+                print("Added barcode column to products table")

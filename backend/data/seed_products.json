@@ -8,7 +8,8 @@
       "unit": "lb",
       "price": 4.99,
       "image_url": "https://images.unsplash.com/photo-1643886027883-1a23fe41ee2a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxDaGlja2VuJTIwQ2hpY2tlbiUyMEJyZWFzdCUyMEJvbmVsZXNzfGVufDB8Mnx8fDE3Njc5OTY3ODd8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000001"
     },
     {
       "name": "Chicken Wings",
@@ -18,7 +19,8 @@
       "unit": "lb",
       "price": 3.49,
       "image_url": "https://images.unsplash.com/photo-1627378378938-291417b4210c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxDaGlja2VuJTIwQ2hpY2tlbiUyMFdpbmdzfGVufDB8Mnx8fDE3Njc5OTY3ODh8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000002"
     },
     {
       "name": "Ground Beef 80/20",
@@ -28,7 +30,8 @@
       "unit": "lb",
       "price": 5.99,
       "image_url": "https://images.unsplash.com/photo-1644015947779-8540d63e9d0d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxCZWVmJTIwR3JvdW5kJTIwQmVlZiUyMDgwJTJGMjB8ZW58MHwyfHx8MTc2Nzk5Njc4OHww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000003"
     },
     {
       "name": "Ribeye Steak",
@@ -38,7 +41,8 @@
       "unit": "lb",
       "price": 14.99,
       "image_url": "https://images.unsplash.com/photo-1625937329935-287441889bce?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxCZWVmJTIwUmliZXllJTIwU3RlYWt8ZW58MHwyfHx8MTc2Nzk5Njc4OXww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000004"
     },
     {
       "name": "Pork Chops",
@@ -48,7 +52,8 @@
       "unit": "lb",
       "price": 4.49,
       "image_url": "https://images.unsplash.com/photo-1709392975965-00889c6aa545?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxQb3JrJTIwQ2hvcHN8ZW58MHwyfHx8MTc2Nzk5Njc5MXww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000005"
     },
     {
       "name": "Bacon Sliced",
@@ -58,7 +63,8 @@
       "unit": "lb",
       "price": 7.99,
       "image_url": "https://images.unsplash.com/photo-1587316925366-326c1ca7b29e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxQb3JrJTIwQmFjb24lMjBTbGljZWR8ZW58MHwyfHx8MTc2Nzk5Njc5Mnww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000006"
     },
     {
       "name": "Atlantic Salmon Fillet",
@@ -68,7 +74,8 @@
       "unit": "lb",
       "price": 12.99,
       "image_url": "https://images.unsplash.com/photo-1739785938237-73b3654200d5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxTZWFmb29kJTIwQXRsYW50aWMlMjBTYWxtb24lMjBGaWxsZXR8ZW58MHwyfHx8MTc2Nzk5Njc5M3ww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000007"
     },
     {
       "name": "Shrimp 21/25",
@@ -78,7 +85,8 @@
       "unit": "lb",
       "price": 11.99,
       "image_url": "https://images.unsplash.com/photo-1644371902483-c2760da87d36?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxTZWFmb29kJTIwU2hyaW1wJTIwMjElMkYyNXxlbnwwfDJ8fHwxNzY3OTk2Nzk0fDA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000008"
     },
     {
       "name": "Tilapia Fillet",
@@ -88,7 +96,8 @@
       "unit": "lb",
       "price": 6.99,
       "image_url": "https://images.unsplash.com/photo-1713759980610-5a3b72d7f9d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000009"
     },
     {
       "name": "Roma Tomatoes",
@@ -98,7 +107,8 @@
       "unit": "lb",
       "price": 2.49,
       "image_url": "https://images.unsplash.com/photo-1572028160424-be8f37aa0a49?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxWZWdldGFibGVzJTIwUm9tYSUyMFRvbWF0b2VzfGVufDB8Mnx8fDE3Njc5OTY3OTV8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000010"
     },
     {
       "name": "Yellow Onions",
@@ -108,7 +118,8 @@
       "unit": "bag",
       "price": 3.99,
       "image_url": "https://images.unsplash.com/photo-1638464522667-d255c09cca64?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxWZWdldGFibGVzJTIwWWVsbG93JTIwT25pb25zfGVufDB8Mnx8fDE3Njc5OTY3OTZ8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000011"
     },
     {
       "name": "Russet Potatoes",
@@ -118,7 +129,8 @@
       "unit": "bag",
       "price": 6.99,
       "image_url": "https://images.unsplash.com/photo-1518977676601-b53f82aba655?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000012"
     },
     {
       "name": "Baby Spinach",
@@ -128,7 +140,8 @@
       "unit": "each",
       "price": 4.49,
       "image_url": "https://images.unsplash.com/photo-1519995672084-d21490e86ba6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000013"
     },
     {
       "name": "Romaine Lettuce",
@@ -138,7 +151,8 @@
       "unit": "pack",
       "price": 3.99,
       "image_url": "https://images.unsplash.com/photo-1691504882155-75b20e2aa3c0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxWZWdldGFibGVzJTIwUm9tYWluZSUyMExldHR1Y2V8ZW58MHwyfHx8MTc2Nzk5Njc5OXww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000014"
     },
     {
       "name": "Bell Peppers Mixed",
@@ -148,7 +162,8 @@
       "unit": "each",
       "price": 1.29,
       "image_url": "https://images.unsplash.com/photo-1625675411855-534ee6b464ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxWZWdldGFibGVzJTIwQmVsbCUyMFBlcHBlcnMlMjBNaXhlZHxlbnwwfDJ8fHwxNzY3OTk2ODAwfDA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000015"
     },
     {
       "name": "Carrots",
@@ -158,7 +173,8 @@
       "unit": "bag",
       "price": 2.49,
       "image_url": "https://images.unsplash.com/photo-1729292993549-a74a67e69c2a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxWZWdldGFibGVzJTIwQ2Fycm90c3xlbnwwfDJ8fHwxNzY3OTk2ODAxfDA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000016"
     },
     {
       "name": "Broccoli Crowns",
@@ -168,7 +184,8 @@
       "unit": "lb",
       "price": 2.99,
       "image_url": "https://images.unsplash.com/photo-1667980970777-b3d7267b6c43?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxWZWdldGFibGVzJTIwQnJvY2NvbGklMjBDcm93bnN8ZW58MHwyfHx8MTc2Nzk5NjgwMnww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000017"
     },
     {
       "name": "Garlic Bulbs",
@@ -178,7 +195,8 @@
       "unit": "pack",
       "price": 2.49,
       "image_url": "https://images.unsplash.com/photo-1604880285069-e535d08ecfd2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxWZWdldGFibGVzJTIwR2FybGljJTIwQnVsYnN8ZW58MHwyfHx8MTc2Nzk5NjgwM3ww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000018"
     },
     {
       "name": "Bananas",
@@ -188,7 +206,8 @@
       "unit": "lb",
       "price": 0.69,
       "image_url": "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxGcnVpdHMlMjBCYW5hbmFzfGVufDB8Mnx8fDE3Njc5OTY4MDR8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000019"
     },
     {
       "name": "Apples Gala",
@@ -198,7 +217,8 @@
       "unit": "lb",
       "price": 1.99,
       "image_url": "https://images.unsplash.com/photo-1571139317672-93369256842c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxGcnVpdHMlMjBBcHBsZXMlMjBHYWxhfGVufDB8Mnx8fDE3Njc5OTY4MDV8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000020"
     },
     {
       "name": "Lemons",
@@ -208,7 +228,8 @@
       "unit": "each",
       "price": 0.49,
       "image_url": "https://images.unsplash.com/photo-1648729777661-a118ebd2f58a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxGcnVpdHMlMjBMZW1vbnN8ZW58MHwyfHx8MTc2Nzk5NjgwNnww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000021"
     },
     {
       "name": "Limes",
@@ -218,7 +239,8 @@
       "unit": "each",
       "price": 0.39,
       "image_url": "https://images.unsplash.com/photo-1624835020719-deec76c86249?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxGcnVpdHMlMjBMaW1lc3xlbnwwfDJ8fHwxNzY3OTk2ODA3fDA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000022"
     },
     {
       "name": "Strawberries",
@@ -228,7 +250,8 @@
       "unit": "container",
       "price": 4.99,
       "image_url": "https://images.unsplash.com/photo-1717625940956-421a56f5bdc8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxzdHJhd2JlcnJpZXN8ZW58MHwyfHx8MTc2Nzk5NjgwOHww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000023"
     },
     {
       "name": "Fresh Basil",
@@ -238,7 +261,8 @@
       "unit": "bunch",
       "price": 2.99,
       "image_url": "https://images.unsplash.com/photo-1639929781092-fe59fae895c2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxmcmVzaCUyMGJhc2lsfGVufDB8Mnx8fDE3Njc5OTY4MDl8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000024"
     },
     {
       "name": "Fresh Cilantro",
@@ -248,7 +272,8 @@
       "unit": "bunch",
       "price": 1.49,
       "image_url": "https://images.unsplash.com/photo-1767079561428-1f4115138bd1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxmcmVzaCUyMGNpbGFudHJvfGVufDB8Mnx8fDE3Njc5OTY4MTB8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000025"
     },
     {
       "name": "Fresh Parsley",
@@ -258,7 +283,8 @@
       "unit": "bunch",
       "price": 1.49,
       "image_url": "https://images.unsplash.com/photo-1625943555419-56a2cb596640?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxmcmVzaCUyMHBhcnNsZXl8ZW58MHwyfHx8MTc2Nzk5NjgxMHww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000026"
     },
     {
       "name": "Whole Milk",
@@ -268,7 +294,8 @@
       "unit": "gallon",
       "price": 4.29,
       "image_url": "https://images.unsplash.com/photo-1523473827533-2a64d0d36748?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxNaWxrJTIwV2hvbGUlMjBNaWxrfGVufDB8Mnx8fDE3Njc5OTY4MTF8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000027"
     },
     {
       "name": "2% Milk",
@@ -278,7 +305,8 @@
       "unit": "gallon",
       "price": 4.29,
       "image_url": "https://images.unsplash.com/photo-1523473827533-2a64d0d36748?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxNaWxrJTIwMiUyNSUyME1pbGt8ZW58MHwyfHx8MTc2Nzk5NjgxMnww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000028"
     },
     {
       "name": "Heavy Cream",
@@ -288,7 +316,8 @@
       "unit": "quart",
       "price": 5.99,
       "image_url": "https://images.unsplash.com/photo-1677506082654-0aad2274e95f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxNaWxrJTIwSGVhdnklMjBDcmVhbXxlbnwwfDJ8fHwxNzY3OTk2ODEzfDA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000029"
     },
     {
       "name": "Butter Unsalted",
@@ -298,7 +327,8 @@
       "unit": "lb",
       "price": 5.49,
       "image_url": "https://images.unsplash.com/photo-1600676626845-bc2483a43b4f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxCdXR0ZXIlMjBCdXR0ZXIlMjBVbnNhbHRlZHxlbnwwfDJ8fHwxNzY3OTk2ODE0fDA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000030"
     },
     {
       "name": "Butter Salted",
@@ -308,7 +338,8 @@
       "unit": "lb",
       "price": 5.49,
       "image_url": "https://images.unsplash.com/photo-1752245067548-ed136c86f1cc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxCdXR0ZXIlMjBCdXR0ZXIlMjBTYWx0ZWR8ZW58MHwyfHx8MTc2Nzk5NjgxNXww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000031"
     },
     {
       "name": "Large Eggs",
@@ -318,7 +349,8 @@
       "unit": "dozen",
       "price": 3.99,
       "image_url": "https://images.unsplash.com/photo-1708783741126-327ed87d63f0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxFZ2dzJTIwTGFyZ2UlMjBFZ2dzfGVufDB8Mnx8fDE3Njc5OTY4MTZ8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000032"
     },
     {
       "name": "Eggs Case",
@@ -328,7 +360,8 @@
       "unit": "case",
       "price": 45.99,
       "image_url": "https://images.unsplash.com/photo-1708783741126-327ed87d63f0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxFZ2dzJTIwRWdncyUyMENhc2V8ZW58MHwyfHx8MTc2Nzk5NjgxN3ww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000033"
     },
     {
       "name": "Cheddar Cheese Block",
@@ -338,7 +371,8 @@
       "unit": "block",
       "price": 9.99,
       "image_url": "https://images.unsplash.com/photo-1612800083273-24ea5c80313d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxDaGVlc2UlMjBDaGVkZGFyJTIwQ2hlZXNlJTIwQmxvY2t8ZW58MHwyfHx8MTc2Nzk5NjgxOHww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000034"
     },
     {
       "name": "Mozzarella Shredded",
@@ -348,7 +382,8 @@
       "unit": "bag",
       "price": 18.99,
       "image_url": "https://images.unsplash.com/photo-1751199592465-f142293a8cc6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxDaGVlc2UlMjBNb3p6YXJlbGxhJTIwU2hyZWRkZWR8ZW58MHwyfHx8MTc2Nzk5NjgxOXww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000035"
     },
     {
       "name": "Parmesan Grated",
@@ -358,7 +393,8 @@
       "unit": "container",
       "price": 12.99,
       "image_url": "https://images.unsplash.com/photo-1580981001482-61a9db9b8396?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxDaGVlc2UlMjBQYXJtZXNhbiUyMEdyYXRlZHxlbnwwfDJ8fHwxNzY3OTk2ODIwfDA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000036"
     },
     {
       "name": "Sour Cream",
@@ -368,7 +404,8 @@
       "unit": "container",
       "price": 2.99,
       "image_url": "https://images.unsplash.com/photo-1598299770766-4040a7565a5a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxEYWlyeSUyMFNvdXIlMjBDcmVhbXxlbnwwfDJ8fHwxNzY3OTk2ODIxfDA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000037"
     },
     {
       "name": "Long Grain White Rice",
@@ -378,7 +415,8 @@
       "unit": "bag",
       "price": 19.99,
       "image_url": "https://images.unsplash.com/photo-1568528365124-2da3a14fe3ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxSaWNlJTIwTG9uZyUyMEdyYWluJTIwV2hpdGUlMjBSaWNlfGVufDB8Mnx8fDE3Njc5OTY4MjJ8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000038"
     },
     {
       "name": "Jasmine Rice",
@@ -388,7 +426,19 @@
       "unit": "bag",
       "price": 14.99,
       "image_url": "https://images.unsplash.com/photo-1568528365124-2da3a14fe3ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxSaWNlJTIwSmFzbWluZSUyMFJpY2V8ZW58MHwyfHx8MTc2Nzk5NjgyM3ww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000039"
+    },
+    {
+      "name": "Yellow Rice",
+      "description": "Goya yellow rice, seasoned with saffron and spices",
+      "category": "Dry Goods",
+      "subcategory": "Rice",
+      "unit": "box",
+      "price": 2.49,
+      "image_url": "https://images.unsplash.com/photo-1536304993881-ff6e9eefa2a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400",
+      "is_food": 1,
+      "barcode": "0041331126793"
     },
     {
       "name": "Spaghetti Pasta",
@@ -398,7 +448,8 @@
       "unit": "box",
       "price": 1.99,
       "image_url": "https://images.unsplash.com/photo-1676471771228-c4cdbfbd2a7f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxQYXN0YSUyMFNwYWdoZXR0aSUyMFBhc3RhfGVufDB8Mnx8fDE3Njc5OTY4MjR8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000040"
     },
     {
       "name": "Penne Pasta",
@@ -408,7 +459,8 @@
       "unit": "box",
       "price": 1.99,
       "image_url": "https://images.unsplash.com/photo-1582035619445-9c26d5de240d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxQYXN0YSUyMFBlbm5lJTIwUGFzdGF8ZW58MHwyfHx8MTc2Nzk5NjgyNHww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000041"
     },
     {
       "name": "All Purpose Flour",
@@ -418,7 +470,8 @@
       "unit": "bag",
       "price": 12.99,
       "image_url": "https://images.unsplash.com/photo-1581268497089-7a975fb491a3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxGbG91ciUyMEFsbCUyMFB1cnBvc2UlMjBGbG91cnxlbnwwfDJ8fHwxNzY3OTk2ODI1fDA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000042"
     },
     {
       "name": "Bread Flour",
@@ -428,7 +481,8 @@
       "unit": "bag",
       "price": 14.99,
       "image_url": "https://images.unsplash.com/photo-1758404638316-2d6265012f81?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxGbG91ciUyMEJyZWFkJTIwRmxvdXJ8ZW58MHwyfHx8MTc2Nzk5NjgyNnww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000043"
     },
     {
       "name": "Granulated Sugar",
@@ -438,7 +492,8 @@
       "unit": "bag",
       "price": 16.99,
       "image_url": "https://images.unsplash.com/photo-1593692554229-26fa20f87fcb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxTdWdhciUyMEdyYW51bGF0ZWQlMjBTdWdhcnxlbnwwfDJ8fHwxNzY3OTk2ODI3fDA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000044"
     },
     {
       "name": "Brown Sugar",
@@ -448,7 +503,8 @@
       "unit": "bag",
       "price": 4.49,
       "image_url": "https://images.unsplash.com/photo-1587132164684-cfd0b8214d8e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxTdWdhciUyMEJyb3duJTIwU3VnYXJ8ZW58MHwyfHx8MTc2Nzk5NjgyOHww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000045"
     },
     {
       "name": "Kosher Salt",
@@ -458,7 +514,8 @@
       "unit": "box",
       "price": 4.99,
       "image_url": "https://images.unsplash.com/photo-1721934081798-34c4488fdd12?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxTcGljZXMlMjBLb3NoZXIlMjBTYWx0fGVufDB8Mnx8fDE3Njc5OTY4Mjl8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000046"
     },
     {
       "name": "Black Pepper Ground",
@@ -468,7 +525,8 @@
       "unit": "container",
       "price": 9.99,
       "image_url": "https://images.unsplash.com/photo-1650080892550-c3a9a3ed1345?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxTcGljZXMlMjBCbGFjayUyMFBlcHBlciUyMEdyb3VuZHxlbnwwfDJ8fHwxNzY3OTk2ODMwfDA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000047"
     },
     {
       "name": "Paprika",
@@ -478,7 +536,8 @@
       "unit": "container",
       "price": 7.99,
       "image_url": "https://images.unsplash.com/photo-1650080892550-c3a9a3ed1345?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxTcGljZXMlMjBQYXByaWthfGVufDB8Mnx8fDE3Njc5OTY4MzF8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000048"
     },
     {
       "name": "Cumin Ground",
@@ -488,7 +547,8 @@
       "unit": "container",
       "price": 8.99,
       "image_url": "https://images.unsplash.com/photo-1650080892550-c3a9a3ed1345?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxTcGljZXMlMjBDdW1pbiUyMEdyb3VuZHxlbnwwfDJ8fHwxNzY3OTk2ODMyfDA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000049"
     },
     {
       "name": "Oregano Dried",
@@ -498,7 +558,8 @@
       "unit": "container",
       "price": 5.99,
       "image_url": "https://images.unsplash.com/photo-1568528365124-2da3a14fe3ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxTcGljZXMlMjBPcmVnYW5vJTIwRHJpZWR8ZW58MHwyfHx8MTc2ODE5OTA0OHww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000050"
     },
     {
       "name": "Extra Virgin Olive Oil",
@@ -508,7 +569,8 @@
       "unit": "gallon",
       "price": 29.99,
       "image_url": "https://images.unsplash.com/photo-1627894005682-166e8687356a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxPaWxzJTIwRXh0cmElMjBWaXJnaW4lMjBPbGl2ZSUyME9pbHxlbnwwfDJ8fHwxNzY4MTk5MDQ5fDA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000051"
     },
     {
       "name": "Vegetable Oil",
@@ -518,7 +580,8 @@
       "unit": "gallon",
       "price": 8.99,
       "image_url": "https://images.unsplash.com/photo-1627894005682-166e8687356a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxPaWxzJTIwVmVnZXRhYmxlJTIwT2lsfGVufDB8Mnx8fDE3NjgxOTkwNTB8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000052"
     },
     {
       "name": "Canola Oil",
@@ -528,7 +591,8 @@
       "unit": "gallon",
       "price": 9.99,
       "image_url": "https://images.unsplash.com/photo-1740490278517-21ec451914f6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxPaWxzJTIwQ2Fub2xhJTIwT2lsfGVufDB8Mnx8fDE3NjgxOTkwNTF8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000053"
     },
     {
       "name": "Coca-Cola Classic",
@@ -538,7 +602,8 @@
       "unit": "case",
       "price": 12.99,
       "image_url": "https://images.unsplash.com/photo-1533923378594-bbeb91030909?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxTb2Z0JTIwRHJpbmtzJTIwQ29jYS1Db2xhJTIwQ2xhc3NpY3xlbnwwfDJ8fHwxNzY4MTk5MDUyfDA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000054"
     },
     {
       "name": "Pepsi",
@@ -548,7 +613,8 @@
       "unit": "case",
       "price": 12.99,
       "image_url": "https://images.unsplash.com/photo-1637301985974-d1417e702f13?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxTb2Z0JTIwRHJpbmtzJTIwUGVwc2l8ZW58MHwyfHx8MTc2ODE5OTA1M3ww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000055"
     },
     {
       "name": "Sprite",
@@ -558,7 +624,8 @@
       "unit": "case",
       "price": 12.99,
       "image_url": "https://images.unsplash.com/photo-1750085037147-0f141272a67f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxTb2Z0JTIwRHJpbmtzJTIwU3ByaXRlfGVufDB8Mnx8fDE3NjgxOTkwNTR8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000056"
     },
     {
       "name": "Orange Juice",
@@ -568,7 +635,8 @@
       "unit": "gallon",
       "price": 8.99,
       "image_url": "https://images.unsplash.com/photo-1622374382396-788ac1a4eb20?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxKdWljZXMlMjBPcmFuZ2UlMjBKdWljZXxlbnwwfDJ8fHwxNzY4MTk5MDU1fDA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000057"
     },
     {
       "name": "Apple Juice",
@@ -578,7 +646,8 @@
       "unit": "gallon",
       "price": 6.99,
       "image_url": "https://images.unsplash.com/photo-1608576210916-1aa6dc4a274b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxKdWljZXMlMjBBcHBsZSUyMEp1aWNlfGVufDB8Mnx8fDE3NjgxOTkwNTZ8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000058"
     },
     {
       "name": "Coffee Beans Dark Roast",
@@ -588,7 +657,8 @@
       "unit": "bag",
       "price": 34.99,
       "image_url": "https://images.unsplash.com/photo-1761936513644-cbc5f3207139?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxDb2ZmZWUlMjBDb2ZmZWUlMjBCZWFucyUyMERhcmslMjBSb2FzdHxlbnwwfDJ8fHwxNzY4MTk5MDU3fDA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000059"
     },
     {
       "name": "Coffee Beans Medium Roast",
@@ -598,7 +668,8 @@
       "unit": "bag",
       "price": 32.99,
       "image_url": "https://images.unsplash.com/photo-1592920704646-99d0d6792133?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxDb2ZmZWUlMjBDb2ZmZWUlMjBCZWFucyUyME1lZGl1bSUyMFJvYXN0fGVufDB8Mnx8fDE3NjgxOTkwNTh8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000060"
     },
     {
       "name": "Bottled Water",
@@ -608,7 +679,8 @@
       "unit": "case",
       "price": 5.99,
       "image_url": "https://images.unsplash.com/photo-1634065043358-a7b31fb186a8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxXYXRlciUyMEJvdHRsZWQlMjBXYXRlcnxlbnwwfDJ8fHwxNzY4MTk5MDU5fDA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000061"
     },
     {
       "name": "Frozen French Fries",
@@ -618,7 +690,8 @@
       "unit": "bag",
       "price": 8.99,
       "image_url": "https://images.unsplash.com/photo-1647705195905-671a25be159d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxGcm96ZW4lMjBWZWdldGFibGVzJTIwRnJvemVuJTIwRnJlbmNoJTIwRnJpZXN8ZW58MHwyfHx8MTc2ODE5OTA2MHww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000062"
     },
     {
       "name": "Frozen Mixed Vegetables",
@@ -628,7 +701,8 @@
       "unit": "bag",
       "price": 7.99,
       "image_url": "https://images.unsplash.com/photo-1518164147695-36c13dd568f5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxGcm96ZW4lMjBWZWdldGFibGVzJTIwRnJvemVuJTIwTWl4ZWQlMjBWZWdldGFibGVzfGVufDB8Mnx8fDE3NjgxOTkwNjF8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000063"
     },
     {
       "name": "Frozen Peas",
@@ -638,7 +712,8 @@
       "unit": "bag",
       "price": 6.99,
       "image_url": "https://images.unsplash.com/photo-1693667660388-7cccf194fc06?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxGcm96ZW4lMjBWZWdldGFibGVzJTIwRnJvemVuJTIwUGVhc3xlbnwwfDJ8fHwxNzY4MTk5MDYyfDA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000064"
     },
     {
       "name": "Frozen Corn",
@@ -648,7 +723,8 @@
       "unit": "bag",
       "price": 6.99,
       "image_url": "https://images.unsplash.com/photo-1742416587942-b5f0c8446e3e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxGcm96ZW4lMjBWZWdldGFibGVzJTIwRnJvemVuJTIwQ29ybnxlbnwwfDJ8fHwxNzY4MTk5MDYzfDA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000065"
     },
     {
       "name": "Vanilla Ice Cream",
@@ -658,7 +734,8 @@
       "unit": "tub",
       "price": 24.99,
       "image_url": "https://images.unsplash.com/photo-1639744092433-0e98ca50d5fc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxJY2UlMjBDcmVhbSUyMFZhbmlsbGElMjBJY2UlMjBDcmVhbXxlbnwwfDJ8fHwxNzY4MTk5MDY0fDA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000066"
     },
     {
       "name": "Chocolate Ice Cream",
@@ -668,7 +745,8 @@
       "unit": "tub",
       "price": 24.99,
       "image_url": "https://images.unsplash.com/photo-1590080962330-747c6aba8028?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxJY2UlMjBDcmVhbSUyMENob2NvbGF0ZSUyMEljZSUyMENyZWFtfGVufDB8Mnx8fDE3NjgxOTkwNjV8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000067"
     },
     {
       "name": "To-Go Containers 32oz",
@@ -678,7 +756,8 @@
       "unit": "case",
       "price": 34.99,
       "image_url": "https://images.unsplash.com/photo-1595877704598-910cd38569f5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxQYWNrYWdpbmclMjBUby1HbyUyMENvbnRhaW5lcnMlMjAzMm96fGVufDB8Mnx8fDE3NjgxOTkwNjZ8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 0
+      "is_food": 0,
+      "barcode": "0010001000068"
     },
     {
       "name": "Aluminum Foil Roll",
@@ -688,7 +767,8 @@
       "unit": "roll",
       "price": 29.99,
       "image_url": "https://images.unsplash.com/photo-1694610882150-4de206edf95a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxQYWNrYWdpbmclMjBBbHVtaW51bSUyMEZvaWwlMjBSb2xsfGVufDB8Mnx8fDE3NjgxOTkwNjd8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 0
+      "is_food": 0,
+      "barcode": "0010001000069"
     },
     {
       "name": "Plastic Wrap",
@@ -698,7 +778,8 @@
       "unit": "roll",
       "price": 24.99,
       "image_url": "https://images.unsplash.com/photo-1694610882150-4de206edf95a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxQYWNrYWdpbmclMjBQbGFzdGljJTIwV3JhcHxlbnwwfDJ8fHwxNzY4MTk5MDY4fDA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 0
+      "is_food": 0,
+      "barcode": "0010001000070"
     },
     {
       "name": "Disposable Gloves",
@@ -708,7 +789,8 @@
       "unit": "box",
       "price": 12.99,
       "image_url": "https://images.unsplash.com/photo-1583294909296-80fd35c2242e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxTYWZldHklMjBEaXNwb3NhYmxlJTIwR2xvdmVzfGVufDB8Mnx8fDE3NjgxOTkwNjh8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 0
+      "is_food": 0,
+      "barcode": "0010001000071"
     },
     {
       "name": "Paper Towels",
@@ -718,7 +800,8 @@
       "unit": "pack",
       "price": 18.99,
       "image_url": "https://images.unsplash.com/photo-1602867005618-ef11b085c9a3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxDbGVhbmluZyUyMFBhcGVyJTIwVG93ZWxzfGVufDB8Mnx8fDE3NjgxOTkwNzB8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 0
+      "is_food": 0,
+      "barcode": "0010001000072"
     },
     {
       "name": "Dish Soap",
@@ -728,7 +811,8 @@
       "unit": "gallon",
       "price": 8.99,
       "image_url": "https://images.unsplash.com/photo-1602867005618-ef11b085c9a3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxDbGVhbmluZyUyMERpc2glMjBTb2FwfGVufDB8Mnx8fDE3NjgxOTkwNzB8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 0
+      "is_food": 0,
+      "barcode": "0010001000073"
     },
     {
       "name": "Sanitizer Spray",
@@ -738,7 +822,8 @@
       "unit": "gallon",
       "price": 14.99,
       "image_url": "https://images.unsplash.com/photo-1766384093044-7dba33a6d1de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxDbGVhbmluZyUyMFNhbml0aXplciUyMFNwcmF5fGVufDB8Mnx8fDE3NjgxOTkwNzF8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 0
+      "is_food": 0,
+      "barcode": "0010001000074"
     },
     {
       "name": "Diced Tomatoes Canned",
@@ -748,7 +833,8 @@
       "unit": "can",
       "price": 4.99,
       "image_url": "https://images.unsplash.com/photo-1739785938383-c1b22b702c3a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxDYW5uZWQlMjBHb29kcyUyMERpY2VkJTIwVG9tYXRvZXMlMjBDYW5uZWR8ZW58MHwyfHx8MTc2ODE5OTA3M3ww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000075"
     },
     {
       "name": "Tomato Paste",
@@ -758,7 +844,8 @@
       "unit": "can",
       "price": 1.49,
       "image_url": "https://images.unsplash.com/photo-1615486171815-2611a6e3cd02?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxDYW5uZWQlMjBHb29kcyUyMFRvbWF0byUyMFBhc3RlfGVufDB8Mnx8fDE3NjgxOTkwNzR8MA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000076"
     },
     {
       "name": "Black Beans Canned",
@@ -768,7 +855,8 @@
       "unit": "can",
       "price": 3.99,
       "image_url": "https://images.unsplash.com/photo-1712257155439-0823ba0ce9d6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxDYW5uZWQlMjBHb29kcyUyMEJsYWNrJTIwQmVhbnMlMjBDYW5uZWR8ZW58MHwyfHx8MTc2ODE5OTA3NXww&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000077"
     },
     {
       "name": "Chickpeas Canned",
@@ -778,7 +866,8 @@
       "unit": "can",
       "price": 4.49,
       "image_url": "https://images.unsplash.com/photo-1712257155439-0823ba0ce9d6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTUxMjJ8MHwxfHNlYXJjaHwxfHxDYW5uZWQlMjBHb29kcyUyMENoaWNrcGVhcyUyMENhbm5lZHxlbnwwfDJ8fHwxNzY4MTk5MDc2fDA&ixlib=rb-4.1.0&q=80&w=400",
-      "is_food": 1
+      "is_food": 1,
+      "barcode": "0010001000078"
     }
   ]
 }
