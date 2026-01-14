@@ -104,13 +104,24 @@ The AI service uses GPT-4o-mini for chat (returns JSON with product matches) and
 
 - **App.jsx** - Main component with tab navigation (Catalog, AI Assistant, Orders, Inventory)
 - **context/CartContext.jsx** - Global cart state using React Context + useReducer
+- **context/ToastContext.jsx** - Toast notification system with success/error/info/warning methods
 - **services/api.js** - API client for all backend calls
 - **components/** - Organized by feature (Catalog, Cart, AIAssistant, Orders, Inventory, BarcodeScanner, UI)
 - **components/UI/Modal.jsx** - Reusable modal component with backdrop and keyboard handling
+- **components/UI/Toast.jsx** - Toast notifications (bottom-right, auto-dismiss after 3s)
+- **components/UI/Skeleton.jsx** - Loading skeleton components (ProductCardSkeleton, ProductRowSkeleton)
 - **components/Catalog/ProductDetailModal.jsx** - Product detail modal with nutrition facts
 - **components/Catalog/NutritionFacts.jsx** - FDA-style nutrition label component
 
 Vite config proxies `/api` to `localhost:8000` for seamless backend communication.
+
+### UI Patterns
+
+- **Toast notifications** - Success/error feedback via `useToast()` hook, slides in from bottom-right
+- **Loading skeletons** - Pulsing placeholder cards/rows while data loads (replaces spinners)
+- **Empty states** - Icon + message when no products match filters
+- **Keyboard shortcuts** - Escape key closes all modals (ProductForm, delete confirmation, etc.)
+- **Dark mode** - Full support via ThemeContext, all components have `dark:` Tailwind variants
 
 ### Database
 

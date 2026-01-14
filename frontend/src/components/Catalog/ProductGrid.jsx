@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { api } from '../../services/api';
 import ProductCard from './ProductCard';
-import { Loader2 } from 'lucide-react';
+import { Package } from 'lucide-react';
+import { ProductGridSkeleton } from '../UI/Skeleton';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -47,11 +48,7 @@ export default function ProductGrid({ searchQuery, selectedCategory }) {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
-      </div>
-    );
+    return <ProductGridSkeleton count={8} />;
   }
 
   if (error) {
@@ -64,9 +61,10 @@ export default function ProductGrid({ searchQuery, selectedCategory }) {
 
   if (products.length === 0) {
     return (
-      <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-        <p className="text-lg">No products found</p>
-        <p className="text-sm mt-2">Try adjusting your search or filters</p>
+      <div className="flex flex-col items-center justify-center py-16 text-gray-500 dark:text-gray-400">
+        <Package className="w-16 h-16 mb-4 opacity-50" />
+        <p className="text-lg font-medium">No products found</p>
+        <p className="text-sm mt-1">Try adjusting your search or filters</p>
       </div>
     );
   }

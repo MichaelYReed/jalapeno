@@ -8,8 +8,10 @@ import Chat from './components/AIAssistant/Chat';
 import OrderHistory from './components/Orders/OrderHistory';
 import BarcodeScanner from './components/BarcodeScanner/BarcodeScanner';
 import InventoryPage from './components/Inventory/InventoryPage';
+import ToastContainer from './components/UI/Toast';
 import { useCart } from './context/CartContext';
 import { useTheme } from './context/ThemeContext';
+import { ToastProvider } from './context/ToastContext';
 
 function App() {
   const { isDark, toggleTheme } = useTheme();
@@ -24,6 +26,7 @@ function App() {
   const itemCount = getItemCount();
 
   return (
+    <ToastProvider>
     <div className="min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors">
       {/* Header */}
       <header className="bg-white dark:bg-slate-900 shadow-sm dark:shadow-slate-800/50 sticky top-0 z-40 transition-colors">
@@ -299,7 +302,11 @@ function App() {
 
       {/* Barcode Scanner */}
       <BarcodeScanner isOpen={scannerOpen} onClose={() => setScannerOpen(false)} />
+
+      {/* Toast Notifications */}
+      <ToastContainer />
     </div>
+    </ToastProvider>
   );
 }
 

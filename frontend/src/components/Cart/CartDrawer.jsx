@@ -3,11 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../../context/CartContext';
 import { api } from '../../services/api';
 import { useState } from 'react';
+import { useToast } from '../../context/ToastContext';
 
 export default function CartDrawer({ open, onClose }) {
   const { items, updateQuantity, removeItem, clearCart, getTotal } = useCart();
   const [submitting, setSubmitting] = useState(false);
-  const [orderSuccess, setOrderSuccess] = useState(false);
+  const toast = useToast();
 
   const handleCheckout = async () => {
     if (items.length === 0) return;
@@ -20,16 +21,12 @@ export default function CartDrawer({ open, onClose }) {
       }));
 
       await api.createOrder(orderItems);
-      setOrderSuccess(true);
       clearCart();
-
-      setTimeout(() => {
-        setOrderSuccess(false);
-        onClose();
-      }, 2000);
+      onClose();
+      toast.success('Order placed successfully!');
     } catch (err) {
       console.error('Failed to create order:', err);
-      alert('Failed to place order. Please try again.');
+      toast.error('Failed to place order. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -73,13 +70,6 @@ export default function CartDrawer({ open, onClose }) {
             <X className="w-5 h-5 dark:text-gray-200" />
           </button>
         </div>
-
-        {/* Success Message */}
-        {orderSuccess && (
-          <div className="m-4 p-4 bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 rounded-lg text-center">
-            Order placed successfully!
-          </div>
-        )}
 
         {/* Cart Items */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4" style={{ maxHeight: 'calc(100vh - 200px)' }}>

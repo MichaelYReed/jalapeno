@@ -1,33 +1,45 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Search, Package, Pencil, Trash2, Camera, AlertCircle, Loader2 } from 'lucide-react';
+import { Plus, Search, Package, Pencil, Trash2 } from 'lucide-react';
 import { api } from '../../services/api';
 import ProductForm from './ProductForm';
+import { ProductTableSkeleton } from '../UI/Skeleton';
+import { useToast } from '../../context/ToastContext';
 
 export default function InventoryPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [categories, setCategories] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const toast = useToast();
 
   useEffect(() => {
     loadProducts();
     loadCategories();
   }, []);
 
+  // Escape key to close delete confirmation
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && deleteConfirm) {
+        setDeleteConfirm(null);
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [deleteConfirm]);
+
   const loadProducts = async () => {
     try {
       setLoading(true);
       const data = await api.getProducts();
       setProducts(data);
-      setError(null);
     } catch (err) {
-      setError('Failed to load products');
+      toast.error('Failed to load products');
       console.error(err);
     } finally {
       setLoading(false);
@@ -48,8 +60,9 @@ export default function InventoryPage() {
       await api.deleteProduct(product.id);
       setProducts(products.filter(p => p.id !== product.id));
       setDeleteConfirm(null);
+      toast.success(`"${product.name}" deleted`);
     } catch (err) {
-      setError('Failed to delete product');
+      toast.error('Failed to delete product');
       console.error(err);
     }
   };
@@ -59,9 +72,11 @@ export default function InventoryPage() {
       if (isEdit) {
         const updated = await api.updateProduct(editingProduct.id, productData);
         setProducts(products.map(p => p.id === updated.id ? updated : p));
+        toast.success(`"${updated.name}" updated`);
       } else {
         const created = await api.createProduct(productData);
         setProducts([...products, created]);
+        toast.success(`"${created.name}" added`);
       }
       setShowForm(false);
       setEditingProduct(null);
@@ -93,8 +108,35 @@ export default function InventoryPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+              <Package className="w-7 h-7 text-amber-500" />
+              Inventory Management
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">
+              Add, edit, and manage products
+            </p>
+          </div>
+        </div>
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+          <table className="w-full">
+            <thead className="bg-gray-50 dark:bg-slate-900/50">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Category</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Price</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Barcode</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ProductTableSkeleton count={5} />
+            </tbody>
+          </table>
+        </div>
       </div>
     );
   }
@@ -123,20 +165,6 @@ export default function InventoryPage() {
           Add Product
         </button>
       </div>
-
-      {/* Error Banner */}
-      {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
-          <p className="text-red-700 dark:text-red-400">{error}</p>
-          <button
-            onClick={() => setError(null)}
-            className="ml-auto text-red-500 hover:text-red-700"
-          >
-            Dismiss
-          </button>
-        </div>
-      )}
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">

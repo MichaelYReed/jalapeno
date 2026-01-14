@@ -228,6 +228,17 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
     };
   }, []);
 
+  // Escape key to close modal
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [onClose]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
