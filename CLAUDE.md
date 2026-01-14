@@ -102,10 +102,10 @@ The AI service uses GPT-4o-mini for chat (returns JSON with product matches) and
 
 ### Frontend
 
-- **App.jsx** - Main component with tab navigation (Catalog, AI Assistant, Orders)
+- **App.jsx** - Main component with tab navigation (Catalog, AI Assistant, Orders, Inventory)
 - **context/CartContext.jsx** - Global cart state using React Context + useReducer
 - **services/api.js** - API client for all backend calls
-- **components/** - Organized by feature (Catalog, Cart, AIAssistant, Orders, UI)
+- **components/** - Organized by feature (Catalog, Cart, AIAssistant, Orders, Inventory, BarcodeScanner, UI)
 - **components/UI/Modal.jsx** - Reusable modal component with backdrop and keyboard handling
 - **components/Catalog/ProductDetailModal.jsx** - Product detail modal with nutrition facts
 - **components/Catalog/NutritionFacts.jsx** - FDA-style nutrition label component
@@ -185,8 +185,12 @@ The fetch script skips products that already have images. Unsplash free tier all
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/api/products` | GET | List products (supports `search`, `category`, `subcategory` params) |
+| `/api/products` | POST | Create new product |
 | `/api/products/{id}` | GET | Get single product |
+| `/api/products/{id}` | PUT | Update product |
+| `/api/products/{id}` | DELETE | Delete product |
 | `/api/products/{id}/nutrition` | GET | Get nutrition facts from USDA FoodData Central |
+| `/api/products/barcode/{barcode}` | GET | Lookup product by barcode (with Open Food Facts fallback) |
 | `/api/categories` | GET | List categories with subcategories |
 | `/api/orders` | GET/POST | List or create orders |
 | `/api/chat` | POST | AI chat for natural language ordering |
@@ -246,3 +250,29 @@ AWS resources are managed by Copilot. Secrets stored in SSM Parameter Store at:
 **Live URLs:**
 - Frontend (HTTPS): https://dknu09xe73cdt.cloudfront.net
 - Backend API: http://jalape-Publi-n1Sr6QWCeWpE-323367462.us-east-1.elb.amazonaws.com
+
+## Inventory Management
+
+The Inventory tab (amber-styled to distinguish from customer-facing green UI) provides staff with product CRUD operations:
+
+### Features
+
+- **Product List** - View all products with images, categories, prices, stock status, and barcodes
+- **Add Product** - Scan barcode to auto-fill from Open Food Facts, or enter manually
+- **Edit Product** - Update name, description, category, price, stock, image URL
+- **Delete Product** - Remove products with confirmation dialog
+
+### Barcode Scanning
+
+The app uses Quagga2 library for barcode scanning:
+
+1. **Customer scanning** - Scan product barcode in catalog to quickly add to cart
+2. **Inventory scanning** - Scan barcode when adding products to pre-fill form data from Open Food Facts
+3. **Fallback search** - If barcode not in local DB, looks up Open Food Facts and shows similar local products
+
+### Components
+
+- `components/Inventory/InventoryPage.jsx` - Main inventory tab with product table
+- `components/Inventory/ProductForm.jsx` - Add/edit product modal with barcode scanner
+- `components/BarcodeScanner/BarcodeScanner.jsx` - Customer-facing barcode scanner for cart
+- `services/barcode_service.py` - Open Food Facts API integration and similar product search

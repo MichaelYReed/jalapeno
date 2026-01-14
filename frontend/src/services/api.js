@@ -32,6 +32,34 @@ export const api = {
     return response.json();
   },
 
+  async createProduct(productData) {
+    const response = await fetch(`${API_BASE}/products`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productData)
+    });
+    if (!response.ok) throw new Error('Failed to create product');
+    return response.json();
+  },
+
+  async updateProduct(id, productData) {
+    const response = await fetch(`${API_BASE}/products/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productData)
+    });
+    if (!response.ok) throw new Error('Failed to update product');
+    return response.json();
+  },
+
+  async deleteProduct(id) {
+    const response = await fetch(`${API_BASE}/products/${id}`, {
+      method: 'DELETE'
+    });
+    if (!response.ok) throw new Error('Failed to delete product');
+    return true;
+  },
+
   async getCategories() {
     const response = await fetch(`${API_BASE}/categories`);
     if (!response.ok) throw new Error('Failed to fetch categories');

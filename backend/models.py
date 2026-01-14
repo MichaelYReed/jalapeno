@@ -17,7 +17,20 @@ class ProductBase(BaseModel):
 
 
 class ProductCreate(ProductBase):
-    pass
+    in_stock: int = 1
+
+
+class ProductUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    category: Optional[str] = None
+    subcategory: Optional[str] = None
+    unit: Optional[str] = None
+    price: Optional[float] = None
+    image_url: Optional[str] = None
+    in_stock: Optional[int] = None
+    is_food: Optional[int] = None
+    barcode: Optional[str] = None
 
 
 class ProductResponse(ProductBase):

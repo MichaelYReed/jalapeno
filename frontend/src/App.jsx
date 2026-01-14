@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, MessageSquare, Package, Menu, X, Moon, Sun, Camera } from 'lucide-react';
+import { ShoppingCart, MessageSquare, Package, Menu, X, Moon, Sun, Camera, PackageOpen } from 'lucide-react';
 import ProductGrid from './components/Catalog/ProductGrid';
 import CategorySidebar from './components/Catalog/CategorySidebar';
 import CartDrawer from './components/Cart/CartDrawer';
 import Chat from './components/AIAssistant/Chat';
 import OrderHistory from './components/Orders/OrderHistory';
 import BarcodeScanner from './components/BarcodeScanner/BarcodeScanner';
+import InventoryPage from './components/Inventory/InventoryPage';
 import { useCart } from './context/CartContext';
 import { useTheme } from './context/ThemeContext';
 
@@ -75,6 +76,17 @@ function App() {
                 <Package className="w-5 h-5" />
                 Orders
               </button>
+              <button
+                onClick={() => setActiveTab('inventory')}
+                className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-colors ${
+                  activeTab === 'inventory'
+                    ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300'
+                    : 'hover:bg-gray-100 dark:hover:bg-slate-800 dark:text-gray-200'
+                }`}
+              >
+                <PackageOpen className="w-5 h-5" />
+                Inventory
+              </button>
             </nav>
 
             {/* Theme Toggle & Cart */}
@@ -138,6 +150,17 @@ function App() {
             >
               <Package className="w-4 h-4" />
               Orders
+            </button>
+            <button
+              onClick={() => setActiveTab('inventory')}
+              className={`px-4 py-2 rounded-lg flex items-center gap-2 whitespace-nowrap transition-colors ${
+                activeTab === 'inventory'
+                  ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300'
+                  : 'bg-gray-100 dark:bg-slate-800 dark:text-gray-200'
+              }`}
+            >
+              <PackageOpen className="w-4 h-4" />
+              Inventory
             </button>
           </nav>
 
@@ -254,6 +277,18 @@ function App() {
               transition={{ duration: 0.2 }}
             >
               <OrderHistory />
+            </motion.div>
+          )}
+
+          {activeTab === 'inventory' && (
+            <motion.div
+              key="inventory"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <InventoryPage />
             </motion.div>
           )}
         </AnimatePresence>

@@ -4,7 +4,7 @@ from sqlalchemy import or_
 from typing import Optional, List
 
 from database import get_db, Product
-from models import ProductResponse, NutritionResponse
+from models import ProductResponse, ProductCreate, ProductUpdate, NutritionResponse
 from services.nutrition_service import get_nutrition_for_product
 from services.barcode_service import lookup_external_barcode, search_similar_products
 from services.cache import (
@@ -223,3 +223,55 @@ async def autocomplete(
     ).limit(limit).all()
 
     return [{"id": p.id, "name": p.name, "category": p.category} for p in products]
+
+
+@router.post("/products", response_model=ProductResponse, status_code=201)
+async def create_product(product: ProductCreate, db: Session = Depends(get_db)):
+    """Create a new product"""
+    db_product = Product(**product.model_dump())
+    db.add(db_product)
+    db.commit()
+    db.refresh(db_product)
+
+    # Invalidate products cache
+    cache_key = "catalog:products:"
+    # Note: Full cache invalidation would require tracking all product cache keys
+
+    return db_product
+
+
+@router.put("/products/{product_id}", response_model=ProductResponse)
+async def update_product(product_id: int, product: ProductUpdate, db: Session = Depends(get_db)):
+    """Update an existing product"""
+    db_product = db.query(Product).filter(Product.id == product_id).first()
+    if not db_product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    for key, value in product.model_dump(exclude_unset=True).items():
+        setattr(db_product, key, value)
+
+    db.commit()
+    db.refresh(db_product)
+
+    # Invalidate product cache
+    cache_key = f"catalog:product:{product_id}"
+    cache_set(cache_key, None, 0)  # Clear specific product cache
+
+    return db_product
+
+
+@router.delete("/products/{product_id}", status_code=204)
+async def delete_product(product_id: int, db: Session = Depends(get_db)):
+    """Delete a product"""
+    db_product = db.query(Product).filter(Product.id == product_id).first()
+    if not db_product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    db.delete(db_product)
+    db.commit()
+
+    # Invalidate product cache
+    cache_key = f"catalog:product:{product_id}"
+    cache_set(cache_key, None, 0)
+
+    return None
