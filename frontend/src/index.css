@@ -2,9 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Fix mobile touch delay - tell browser not to wait for double-tap gestures */
+html {
+  touch-action: manipulation;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
   transition: background-color 0.2s ease-in-out;
+  touch-action: manipulation;
 }
 
 /* Custom scrollbar - Light mode */
