@@ -275,3 +275,11 @@ async def delete_product(product_id: int, db: Session = Depends(get_db)):
     cache_set(cache_key, None, 0)
 
     return None
+
+
+@router.get("/images/search")
+async def search_product_image(q: str = Query(..., min_length=2, description="Search query")):
+    """Search Unsplash for a product image (fallback when Open Food Facts has none)"""
+    from services.image_service import search_unsplash_image
+    image_url = await search_unsplash_image(q)
+    return {"image_url": image_url}

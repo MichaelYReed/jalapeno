@@ -191,6 +191,7 @@ The fetch script skips products that already have images. Unsplash free tier all
 | `/api/products/{id}` | DELETE | Delete product |
 | `/api/products/{id}/nutrition` | GET | Get nutrition facts from USDA FoodData Central |
 | `/api/products/barcode/{barcode}` | GET | Lookup product by barcode (with Open Food Facts fallback) |
+| `/api/images/search` | GET | Search Unsplash for product image (fallback for barcode scan) |
 | `/api/categories` | GET | List categories with subcategories |
 | `/api/orders` | GET/POST | List or create orders |
 | `/api/chat` | POST | AI chat for natural language ordering |
@@ -270,9 +271,16 @@ The app uses Quagga2 library for barcode scanning:
 2. **Inventory scanning** - Scan barcode when adding products to pre-fill form data from Open Food Facts
 3. **Fallback search** - If barcode not in local DB, looks up Open Food Facts and shows similar local products
 
+When scanning a barcode for inventory, the app auto-fills:
+- **Name** - Product name from Open Food Facts
+- **Description** - Generic name, or brand + quantity if no generic name
+- **Category** - Mapped from Open Food Facts categories (Proteins, Dairy, Produce, Frozen, Beverages, Dry Goods)
+- **Image URL** - From Open Food Facts, with Unsplash fallback if none available
+
 ### Components
 
 - `components/Inventory/InventoryPage.jsx` - Main inventory tab with product table
-- `components/Inventory/ProductForm.jsx` - Add/edit product modal with barcode scanner
+- `components/Inventory/ProductForm.jsx` - Add/edit product modal with barcode scanner and auto-fill
 - `components/BarcodeScanner/BarcodeScanner.jsx` - Customer-facing barcode scanner for cart
 - `services/barcode_service.py` - Open Food Facts API integration and similar product search
+- `services/image_service.py` - Unsplash API integration for fallback product images

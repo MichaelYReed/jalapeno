@@ -2,8 +2,71 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { X, Camera, Loader2, AlertCircle } from 'lucide-react';
 import Quagga from '@ericblade/quagga2';
+import { api } from '../../services/api';
 
 const UNITS = ['lb', 'each', 'oz', 'bag', 'box', 'bottle', 'can', 'bunch', 'pack', 'dozen', 'gallon', 'pint'];
+
+// Map Open Food Facts categories to local categories
+const mapCategory = (categoryTags) => {
+  if (!categoryTags || !categoryTags.length) return null;
+
+  const tagString = categoryTags.join(' ').toLowerCase();
+
+  // Check for matches (order matters - more specific first)
+  if (tagString.includes('meat') || tagString.includes('poultry') ||
+      tagString.includes('fish') || tagString.includes('seafood') ||
+      tagString.includes('beef') || tagString.includes('pork') ||
+      tagString.includes('chicken') || tagString.includes('eggs')) {
+    return 'Proteins';
+  }
+  if (tagString.includes('dairy') || tagString.includes('cheese') ||
+      tagString.includes('milk') || tagString.includes('yogurt') ||
+      tagString.includes('butter') || tagString.includes('cream')) {
+    return 'Dairy';
+  }
+  if (tagString.includes('fruit') || tagString.includes('vegetable') ||
+      tagString.includes('salad') || tagString.includes('fresh')) {
+    return 'Produce';
+  }
+  if (tagString.includes('frozen')) {
+    return 'Frozen';
+  }
+  if (tagString.includes('beverage') || tagString.includes('drink') ||
+      tagString.includes('juice') || tagString.includes('water') ||
+      tagString.includes('soda') || tagString.includes('coffee') ||
+      tagString.includes('tea')) {
+    return 'Beverages';
+  }
+  // Default fallback for most packaged foods
+  if (tagString.includes('pasta') || tagString.includes('cereal') ||
+      tagString.includes('grain') || tagString.includes('rice') ||
+      tagString.includes('bread') || tagString.includes('snack') ||
+      tagString.includes('canned') || tagString.includes('sauce') ||
+      tagString.includes('condiment') || tagString.includes('bean')) {
+    return 'Dry Goods';
+  }
+
+  return null;
+};
+
+// Build a description from Open Food Facts data
+const buildDescription = (product) => {
+  // Prefer generic_name if available
+  if (product.generic_name) {
+    return product.generic_name;
+  }
+
+  // Build from brands and quantity
+  const parts = [];
+  if (product.brands) {
+    parts.push(product.brands);
+  }
+  if (product.quantity) {
+    parts.push(product.quantity);
+  }
+
+  return parts.length > 0 ? parts.join(' - ') : null;
+};
 
 export default function ProductForm({ product, categories, onSave, onClose }) {
   const isEdit = !!product;
@@ -23,6 +86,7 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
   const [error, setError] = useState(null);
   const [scanning, setScanning] = useState(false);
   const [lookingUp, setLookingUp] = useState(false);
+  const [fetchedProduct, setFetchedProduct] = useState(null);
   const scannerRef = useRef(null);
   const isProcessingRef = useRef(false);
 
@@ -113,6 +177,7 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
   const handleBarcodeScanned = async (barcode) => {
     setFormData(prev => ({ ...prev, barcode }));
     setLookingUp(true);
+    setFetchedProduct(null);
 
     try {
       // Try to lookup in Open Food Facts to pre-fill form
@@ -121,11 +186,32 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
 
       if (data.status === 1 && data.product) {
         const p = data.product;
+        const productName = p.product_name || p.product_name_en;
+        let productImage = p.image_url || p.image_front_url || p.image_front_small_url;
+
+        // Fallback to Unsplash if Open Food Facts has no image
+        if (!productImage && productName) {
+          productImage = await api.searchProductImage(productName);
+        }
+
+        // Map category from Open Food Facts categories_tags
+        const detectedCategory = mapCategory(p.categories_tags);
+
+        // Build description from available fields
+        const productDescription = buildDescription(p);
+
+        setFetchedProduct({
+          name: productName,
+          image: productImage,
+          category: detectedCategory,
+        });
+
         setFormData(prev => ({
           ...prev,
-          name: p.product_name || p.product_name_en || prev.name,
-          description: p.generic_name || prev.description,
-          image_url: p.image_url || p.image_front_url || prev.image_url,
+          name: productName || prev.name,
+          description: productDescription || prev.description,
+          image_url: productImage || prev.image_url,
+          category: detectedCategory || prev.category,
         }));
       }
     } catch (err) {
@@ -270,6 +356,17 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
                   <span className="text-sm">Looking up product info...</span>
                 </div>
               )}
+              {fetchedProduct && !scanning && !lookingUp && (
+                <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                  <p className="text-green-700 dark:text-green-400 font-medium">Product found: {fetchedProduct.name}</p>
+                  {fetchedProduct.category && (
+                    <p className="text-green-600 dark:text-green-500 text-sm mt-1">Category: {fetchedProduct.category}</p>
+                  )}
+                  {!fetchedProduct.image && (
+                    <p className="text-green-600 dark:text-green-500 text-sm mt-1">No image available in database</p>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
@@ -392,8 +489,7 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
                 <img
                   src={formData.image_url}
                   alt="Preview"
-                  className="w-20 h-20 object-cover rounded-lg"
-                  onError={(e) => e.target.style.display = 'none'}
+                  className="w-32 h-32 object-cover rounded-lg border border-gray-200 dark:border-slate-600 shadow-sm"
                 />
               </div>
             )}

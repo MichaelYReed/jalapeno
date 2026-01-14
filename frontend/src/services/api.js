@@ -60,6 +60,17 @@ export const api = {
     return true;
   },
 
+  async searchProductImage(query) {
+    try {
+      const response = await fetch(`${API_BASE}/images/search?q=${encodeURIComponent(query)}`);
+      if (!response.ok) return null;
+      const data = await response.json();
+      return data.image_url;
+    } catch {
+      return null;
+    }
+  },
+
   async getCategories() {
     const response = await fetch(`${API_BASE}/categories`);
     if (!response.ok) throw new Error('Failed to fetch categories');
