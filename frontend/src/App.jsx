@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingCart, MessageSquare, Package, Menu, X, Moon, Sun, Camera, PackageOpen } from 'lucide-react';
 import ProductGrid from './components/Catalog/ProductGrid';
@@ -11,7 +11,7 @@ import InventoryPage from './components/Inventory/InventoryPage';
 import ToastContainer from './components/UI/Toast';
 import { useCart } from './context/CartContext';
 import { useTheme } from './context/ThemeContext';
-import { ToastProvider } from './context/ToastContext';
+import { useToast } from './context/ToastContext';
 
 function App() {
   const { isDark, toggleTheme } = useTheme();
@@ -22,11 +22,37 @@ function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [scannerOpen, setScannerOpen] = useState(false);
   const { getItemCount } = useCart();
+  const toast = useToast();
 
   const itemCount = getItemCount();
 
+  // Lock body scroll when mobile sidebar is open
+  useEffect(() => {
+    if (sidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [sidebarOpen]);
+
+  // Listen for delivery notification events (fallback for mobile)
+  useEffect(() => {
+    const handleDeliveryNotification = (event) => {
+      const { title, message } = event.detail;
+      toast.success(`${title} ${message}`);
+    };
+
+    window.addEventListener('deliveryNotification', handleDeliveryNotification);
+    return () => {
+      window.removeEventListener('deliveryNotification', handleDeliveryNotification);
+    };
+  }, [toast]);
+
   return (
-    <ToastProvider>
+    <>
     <div className="min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors">
       {/* Header */}
       <header className="bg-white dark:bg-slate-900 shadow-sm dark:shadow-slate-800/50 sticky top-0 z-40 transition-colors">
@@ -206,7 +232,7 @@ function App() {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'tween', duration: 0.3 }}
-              className="absolute left-0 top-0 h-full w-72 bg-white dark:bg-slate-900 shadow-xl p-4"
+              className="absolute left-0 top-0 h-full w-72 bg-white dark:bg-slate-900 shadow-xl p-4 overflow-y-auto"
             >
               <div className="flex items-center justify-between mb-4">
                 <h2 className="font-semibold text-lg dark:text-gray-100">Categories</h2>
@@ -306,7 +332,7 @@ function App() {
       {/* Toast Notifications */}
       <ToastContainer />
     </div>
-    </ToastProvider>
+    </>
   );
 }
 

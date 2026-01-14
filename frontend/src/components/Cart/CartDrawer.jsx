@@ -4,6 +4,7 @@ import { useCart } from '../../context/CartContext';
 import { api } from '../../services/api';
 import { useState } from 'react';
 import { useToast } from '../../context/ToastContext';
+import { requestNotificationPermission, scheduleDeliveryNotification } from '../../services/notificationService';
 
 export default function CartDrawer({ open, onClose }) {
   const { items, updateQuantity, removeItem, clearCart, getTotal } = useCart();
@@ -20,10 +21,16 @@ export default function CartDrawer({ open, onClose }) {
         quantity: item.quantity
       }));
 
-      await api.createOrder(orderItems);
+      const order = await api.createOrder(orderItems);
       clearCart();
       onClose();
       toast.success('Order placed successfully!');
+
+      // Request notification permission (will be silent if already granted/denied)
+      await requestNotificationPermission();
+
+      // Schedule mock delivery notification after 10 seconds
+      scheduleDeliveryNotification(order.id);
     } catch (err) {
       console.error('Failed to create order:', err);
       toast.error('Failed to place order. Please try again.');

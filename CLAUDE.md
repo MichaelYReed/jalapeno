@@ -106,6 +106,7 @@ The AI service uses GPT-4o-mini for chat (returns JSON with product matches) and
 - **context/CartContext.jsx** - Global cart state using React Context + useReducer
 - **context/ToastContext.jsx** - Toast notification system with success/error/info/warning methods
 - **services/api.js** - API client for all backend calls
+- **services/notificationService.js** - Browser push notifications with mobile fallback
 - **components/** - Organized by feature (Catalog, Cart, AIAssistant, Orders, Inventory, BarcodeScanner, UI)
 - **components/UI/Modal.jsx** - Reusable modal component with backdrop and keyboard handling
 - **components/UI/Toast.jsx** - Toast notifications (bottom-right, auto-dismiss after 3s)
@@ -122,6 +123,16 @@ Vite config proxies `/api` to `localhost:8000` for seamless backend communicatio
 - **Empty states** - Icon + message when no products match filters
 - **Keyboard shortcuts** - Escape key closes all modals (ProductForm, delete confirmation, etc.)
 - **Dark mode** - Full support via ThemeContext, all components have `dark:` Tailwind variants
+
+### Delivery Notifications
+
+Mock delivery confirmation notifications appear 10 seconds after placing an order:
+
+- **Desktop**: Browser push notification via Web Notifications API
+- **Mobile fallback**: In-app toast notification + device vibration
+- **Implementation**: `notificationService.js` dispatches custom event, `App.jsx` listens and shows toast
+
+The system requests notification permission on first order, then uses push notifications if granted, otherwise falls back to in-app toast.
 
 ### Database
 
