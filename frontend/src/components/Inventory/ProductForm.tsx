@@ -1,13 +1,14 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, FormEvent, ChangeEvent } from 'react';
 import { motion } from 'framer-motion';
 import { X, Camera, Loader2, AlertCircle } from 'lucide-react';
 import Quagga from '@ericblade/quagga2';
 import { api } from '../../services/api';
+import type { Product, Category } from '../../types';
 
 const UNITS = ['lb', 'each', 'oz', 'bag', 'box', 'bottle', 'can', 'bunch', 'pack', 'dozen', 'gallon', 'pint'];
 
 // Map Open Food Facts categories to local categories
-const mapCategory = (categoryTags) => {
+const mapCategory = (categoryTags: string[] | undefined): string | null => {
   if (!categoryTags || !categoryTags.length) return null;
 
   const tagString = categoryTags.join(' ').toLowerCase();
@@ -49,15 +50,27 @@ const mapCategory = (categoryTags) => {
   return null;
 };
 
+interface OpenFoodFactsProduct {
+  product_name?: string;
+  product_name_en?: string;
+  generic_name?: string;
+  brands?: string;
+  quantity?: string;
+  image_url?: string;
+  image_front_url?: string;
+  image_front_small_url?: string;
+  categories_tags?: string[];
+}
+
 // Build a description from Open Food Facts data
-const buildDescription = (product) => {
+const buildDescription = (product: OpenFoodFactsProduct): string | null => {
   // Prefer generic_name if available
   if (product.generic_name) {
     return product.generic_name;
   }
 
   // Build from brands and quantity
-  const parts = [];
+  const parts: string[] = [];
   if (product.brands) {
     parts.push(product.brands);
   }
@@ -68,9 +81,35 @@ const buildDescription = (product) => {
   return parts.length > 0 ? parts.join(' - ') : null;
 };
 
-export default function ProductForm({ product, categories, onSave, onClose }) {
+interface FormData {
+  name: string;
+  description: string;
+  category: string;
+  subcategory: string;
+  unit: string;
+  price: string;
+  image_url: string;
+  in_stock: number;
+  is_food: number;
+  barcode: string;
+}
+
+interface FetchedProduct {
+  name: string | undefined;
+  image: string | undefined;
+  category: string | null;
+}
+
+interface ProductFormProps {
+  product: Product | null;
+  categories: Category[];
+  onSave: (productData: Partial<Product>, isEdit: boolean) => Promise<void>;
+  onClose: () => void;
+}
+
+export default function ProductForm({ product, categories, onSave, onClose }: ProductFormProps) {
   const isEdit = !!product;
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: product?.name || '',
     description: product?.description || '',
     category: product?.category || '',
@@ -83,11 +122,11 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
     barcode: product?.barcode || ''
   });
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [scanning, setScanning] = useState(false);
   const [lookingUp, setLookingUp] = useState(false);
-  const [fetchedProduct, setFetchedProduct] = useState(null);
-  const scannerRef = useRef(null);
+  const [fetchedProduct, setFetchedProduct] = useState<FetchedProduct | null>(null);
+  const scannerRef = useRef<HTMLDivElement>(null);
   const isProcessingRef = useRef(false);
 
   const selectedCategory = categories.find(c => c.name === formData.category);
@@ -96,6 +135,53 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
   const stopScanner = useCallback(() => {
     Quagga.stop();
     setScanning(false);
+  }, []);
+
+  const handleBarcodeScanned = useCallback(async (barcode: string) => {
+    setFormData(prev => ({ ...prev, barcode }));
+    setLookingUp(true);
+    setFetchedProduct(null);
+
+    try {
+      // Try to lookup in Open Food Facts to pre-fill form
+      const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
+      const data = await response.json();
+
+      if (data.status === 1 && data.product) {
+        const p: OpenFoodFactsProduct = data.product;
+        const productName = p.product_name || p.product_name_en;
+        let productImage = p.image_url || p.image_front_url || p.image_front_small_url;
+
+        // Fallback to Unsplash if Open Food Facts has no image
+        if (!productImage && productName) {
+          productImage = await api.searchProductImage(productName);
+        }
+
+        // Map category from Open Food Facts categories_tags
+        const detectedCategory = mapCategory(p.categories_tags);
+
+        // Build description from available fields
+        const productDescription = buildDescription(p);
+
+        setFetchedProduct({
+          name: productName,
+          image: productImage,
+          category: detectedCategory,
+        });
+
+        setFormData(prev => ({
+          ...prev,
+          name: productName || prev.name,
+          description: productDescription || prev.description,
+          image_url: productImage || prev.image_url,
+          category: detectedCategory || prev.category,
+        }));
+      }
+    } catch (err) {
+      console.error('Failed to lookup barcode:', err);
+    } finally {
+      setLookingUp(false);
+    }
   }, []);
 
   const initScanner = useCallback(() => {
@@ -148,9 +234,9 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
       if (!code) return;
 
       const errors = result.codeResult.decodedCodes
-        .filter(x => x.error !== undefined)
-        .map(x => x.error);
-      const avgError = errors.reduce((a, b) => a + b, 0) / errors.length;
+        .filter((x: { error?: number }) => x.error !== undefined)
+        .map((x: { error: number }) => x.error);
+      const avgError = errors.reduce((a: number, b: number) => a + b, 0) / errors.length;
 
       if (avgError > 0.1) {
         return;
@@ -160,7 +246,7 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
       stopScanner();
       handleBarcodeScanned(code);
     });
-  }, [stopScanner]);
+  }, [stopScanner, handleBarcodeScanned]);
 
   // Initialize scanner when scanning becomes true
   useEffect(() => {
@@ -174,53 +260,6 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
     setScanning(true);
   };
 
-  const handleBarcodeScanned = async (barcode) => {
-    setFormData(prev => ({ ...prev, barcode }));
-    setLookingUp(true);
-    setFetchedProduct(null);
-
-    try {
-      // Try to lookup in Open Food Facts to pre-fill form
-      const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
-      const data = await response.json();
-
-      if (data.status === 1 && data.product) {
-        const p = data.product;
-        const productName = p.product_name || p.product_name_en;
-        let productImage = p.image_url || p.image_front_url || p.image_front_small_url;
-
-        // Fallback to Unsplash if Open Food Facts has no image
-        if (!productImage && productName) {
-          productImage = await api.searchProductImage(productName);
-        }
-
-        // Map category from Open Food Facts categories_tags
-        const detectedCategory = mapCategory(p.categories_tags);
-
-        // Build description from available fields
-        const productDescription = buildDescription(p);
-
-        setFetchedProduct({
-          name: productName,
-          image: productImage,
-          category: detectedCategory,
-        });
-
-        setFormData(prev => ({
-          ...prev,
-          name: productName || prev.name,
-          description: productDescription || prev.description,
-          image_url: productImage || prev.image_url,
-          category: detectedCategory || prev.category,
-        }));
-      }
-    } catch (err) {
-      console.error('Failed to lookup barcode:', err);
-    } finally {
-      setLookingUp(false);
-    }
-  };
-
   useEffect(() => {
     return () => {
       Quagga.stop();
@@ -230,7 +269,7 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
 
   // Escape key to close modal
   useEffect(() => {
-    const handleEscape = (e) => {
+    const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
       }
@@ -239,7 +278,7 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
     return () => document.removeEventListener('keydown', handleEscape);
   }, [onClose]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -259,22 +298,24 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
 
     setSaving(true);
     try {
-      const submitData = {
-        ...formData,
+      const submitData: Partial<Product> = {
+        name: formData.name,
+        category: formData.category,
+        unit: formData.unit,
         price: parseFloat(formData.price),
         in_stock: formData.in_stock ? 1 : 0,
         is_food: formData.is_food ? 1 : 0,
       };
 
-      // Remove empty optional fields
-      if (!submitData.description) delete submitData.description;
-      if (!submitData.subcategory) delete submitData.subcategory;
-      if (!submitData.image_url) delete submitData.image_url;
-      if (!submitData.barcode) delete submitData.barcode;
+      // Add optional fields if they have values
+      if (formData.description) submitData.description = formData.description;
+      if (formData.subcategory) submitData.subcategory = formData.subcategory;
+      if (formData.image_url) submitData.image_url = formData.image_url;
+      if (formData.barcode) submitData.barcode = formData.barcode;
 
       await onSave(submitData, isEdit);
     } catch (err) {
-      setError(err.message || 'Failed to save product');
+      setError(err instanceof Error ? err.message : 'Failed to save product');
     } finally {
       setSaving(false);
     }
@@ -347,7 +388,7 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
                   <input
                     type="text"
                     value={formData.barcode}
-                    onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, barcode: e.target.value })}
                     placeholder="Enter or scan barcode"
                     className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 dark:text-gray-100 focus:ring-2 focus:ring-amber-500 outline-none transition-colors"
                   />
@@ -389,7 +430,7 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
             <input
               type="text"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, name: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 dark:text-gray-100 focus:ring-2 focus:ring-amber-500 outline-none transition-colors"
               placeholder="Product name"
               required
@@ -403,7 +444,7 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
             </label>
             <textarea
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setFormData({ ...formData, description: e.target.value })}
               rows={2}
               className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 dark:text-gray-100 focus:ring-2 focus:ring-amber-500 outline-none transition-colors resize-none"
               placeholder="Optional description"
@@ -418,7 +459,7 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
               </label>
               <select
                 value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value, subcategory: '' })}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) => setFormData({ ...formData, category: e.target.value, subcategory: '' })}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 dark:text-gray-100 focus:ring-2 focus:ring-amber-500 outline-none transition-colors"
                 required
               >
@@ -434,7 +475,7 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
               </label>
               <select
                 value={formData.subcategory}
-                onChange={(e) => setFormData({ ...formData, subcategory: e.target.value })}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) => setFormData({ ...formData, subcategory: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 dark:text-gray-100 focus:ring-2 focus:ring-amber-500 outline-none transition-colors"
                 disabled={!formData.category || subcategories.length === 0}
               >
@@ -459,7 +500,7 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
                   step="0.01"
                   min="0"
                   value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, price: e.target.value })}
                   className="w-full pl-8 pr-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 dark:text-gray-100 focus:ring-2 focus:ring-amber-500 outline-none transition-colors"
                   placeholder="0.00"
                   required
@@ -472,7 +513,7 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
               </label>
               <select
                 value={formData.unit}
-                onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) => setFormData({ ...formData, unit: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 dark:text-gray-100 focus:ring-2 focus:ring-amber-500 outline-none transition-colors"
                 required
               >
@@ -491,7 +532,7 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
             <input
               type="url"
               value={formData.image_url}
-              onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, image_url: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 dark:text-gray-100 focus:ring-2 focus:ring-amber-500 outline-none transition-colors"
               placeholder="https://..."
             />
@@ -512,7 +553,7 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
               <input
                 type="checkbox"
                 checked={formData.in_stock === 1}
-                onChange={(e) => setFormData({ ...formData, in_stock: e.target.checked ? 1 : 0 })}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, in_stock: e.target.checked ? 1 : 0 })}
                 className="w-5 h-5 rounded border-gray-300 text-amber-500 focus:ring-amber-500"
               />
               <span className="text-sm text-gray-700 dark:text-gray-300">In Stock</span>
@@ -521,7 +562,7 @@ export default function ProductForm({ product, categories, onSave, onClose }) {
               <input
                 type="checkbox"
                 checked={formData.is_food === 1}
-                onChange={(e) => setFormData({ ...formData, is_food: e.target.checked ? 1 : 0 })}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, is_food: e.target.checked ? 1 : 0 })}
                 className="w-5 h-5 rounded border-gray-300 text-amber-500 focus:ring-amber-500"
               />
               <span className="text-sm text-gray-700 dark:text-gray-300">Food Item (has nutrition data)</span>

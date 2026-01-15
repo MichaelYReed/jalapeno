@@ -4,23 +4,63 @@ import { X, Camera, AlertCircle, ShoppingCart, Loader2, RotateCcw, Plus, Minus }
 import Quagga from '@ericblade/quagga2';
 import { api } from '../../services/api';
 import { useCart } from '../../context/CartContext';
+import type { Product } from '../../types';
 
-export default function BarcodeScanner({ isOpen, onClose }) {
+interface BarcodeScannerProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+interface BarcodeResult {
+  found?: boolean;
+  external_name?: string;
+  similar_products?: Product[];
+}
+
+export default function BarcodeScanner({ isOpen, onClose }: BarcodeScannerProps) {
   const [scanning, setScanning] = useState(false);
-  const [error, setError] = useState(null);
-  const [scannedProduct, setScannedProduct] = useState(null);
+  const [error, setError] = useState<string | null>(null);
+  const [scannedProduct, setScannedProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(false);
   const [quantity, setQuantity] = useState(1);
-  const [scannedBarcode, setScannedBarcode] = useState(null);
-  const [similarProducts, setSimilarProducts] = useState(null);
-  const [externalName, setExternalName] = useState(null);
-  const scannerRef = useRef(null);
+  const [scannedBarcode, setScannedBarcode] = useState<string | null>(null);
+  const [similarProducts, setSimilarProducts] = useState<Product[] | null>(null);
+  const [externalName, setExternalName] = useState<string | null>(null);
+  const scannerRef = useRef<HTMLDivElement>(null);
   const isProcessingRef = useRef(false);
   const { addItem } = useCart();
 
   const stopScanner = useCallback(() => {
     Quagga.stop();
     setScanning(false);
+  }, []);
+
+  const lookupBarcode = useCallback(async (barcode: string) => {
+    setLoading(true);
+    setSimilarProducts(null);
+    setExternalName(null);
+    try {
+      const result: Product | BarcodeResult | null = await api.getProductByBarcode(barcode);
+      if (result) {
+        const barcodeResult = result as BarcodeResult;
+        if (barcodeResult.found === false && barcodeResult.similar_products) {
+          // Fallback match - show similar products
+          setExternalName(barcodeResult.external_name || null);
+          setSimilarProducts(barcodeResult.similar_products);
+        } else {
+          // Direct match
+          setScannedProduct(result as Product);
+          setQuantity(1);
+        }
+      } else {
+        setError(`No product found for barcode: ${barcode}`);
+      }
+    } catch (err) {
+      console.error('Barcode lookup error:', err);
+      setError('Failed to lookup product. Please check your connection.');
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const startScanner = useCallback(() => {
@@ -83,9 +123,9 @@ export default function BarcodeScanner({ isOpen, onClose }) {
 
       // Check confidence - only accept high-confidence reads
       const errors = result.codeResult.decodedCodes
-        .filter(x => x.error !== undefined)
-        .map(x => x.error);
-      const avgError = errors.reduce((a, b) => a + b, 0) / errors.length;
+        .filter((x: { error?: number }) => x.error !== undefined)
+        .map((x: { error: number }) => x.error);
+      const avgError = errors.reduce((a: number, b: number) => a + b, 0) / errors.length;
 
       if (avgError > 0.1) {
         console.log('Low confidence scan, ignoring:', code, 'error:', avgError);
@@ -100,34 +140,7 @@ export default function BarcodeScanner({ isOpen, onClose }) {
       lookupBarcode(code);
     });
 
-  }, [stopScanner]);
-
-  const lookupBarcode = async (barcode) => {
-    setLoading(true);
-    setSimilarProducts(null);
-    setExternalName(null);
-    try {
-      const result = await api.getProductByBarcode(barcode);
-      if (result) {
-        if (result.found === false && result.similar_products) {
-          // Fallback match - show similar products
-          setExternalName(result.external_name);
-          setSimilarProducts(result.similar_products);
-        } else {
-          // Direct match
-          setScannedProduct(result);
-          setQuantity(1);
-        }
-      } else {
-        setError(`No product found for barcode: ${barcode}`);
-      }
-    } catch (err) {
-      console.error('Barcode lookup error:', err);
-      setError('Failed to lookup product. Please check your connection.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [stopScanner, lookupBarcode]);
 
   const handleAddToCart = () => {
     if (scannedProduct) {
@@ -166,8 +179,8 @@ export default function BarcodeScanner({ isOpen, onClose }) {
     };
   }, []);
 
-  const getCategoryEmoji = (category) => {
-    const emojis = {
+  const getCategoryEmoji = (category: string): string => {
+    const emojis: Record<string, string> = {
       'Proteins': '🥩',
       'Produce': '🥬',
       'Dairy': '🧀',

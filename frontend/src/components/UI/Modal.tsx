@@ -1,9 +1,19 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
-export default function Modal({ isOpen, onClose, title, children, size = 'md' }) {
-  const handleEscape = useCallback((e) => {
+type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | 'full';
+
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  children: ReactNode;
+  size?: ModalSize;
+}
+
+export default function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalProps) {
+  const handleEscape = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') onClose();
   }, [onClose]);
 
@@ -18,7 +28,7 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' })
     };
   }, [isOpen, handleEscape]);
 
-  const sizeClasses = {
+  const sizeClasses: Record<ModalSize, string> = {
     sm: 'max-w-md',
     md: 'max-w-2xl',
     lg: 'max-w-4xl',

@@ -1,22 +1,23 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, AlertCircle, Info, AlertTriangle, X } from 'lucide-react';
+import { CheckCircle, AlertCircle, Info, AlertTriangle, X, LucideIcon } from 'lucide-react';
 import { useToast } from '../../context/ToastContext';
+import type { ToastType } from '../../types';
 
-const icons = {
+const icons: Record<ToastType, LucideIcon> = {
   success: CheckCircle,
   error: AlertCircle,
   info: Info,
   warning: AlertTriangle,
 };
 
-const styles = {
+const styles: Record<ToastType, string> = {
   success: 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200',
   error: 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200',
   info: 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200',
   warning: 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200',
 };
 
-const iconStyles = {
+const iconStyles: Record<ToastType, string> = {
   success: 'text-green-500',
   error: 'text-red-500',
   info: 'text-blue-500',

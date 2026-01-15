@@ -1,12 +1,25 @@
 import { useState, useRef } from 'react';
 import { Mic, MicOff, Loader2 } from 'lucide-react';
 import { api } from '../../services/api';
+import type { ChatSuggestion } from '../../types';
 
-export default function VoiceInput({ onResult, disabled }) {
+interface VoiceResponse {
+  transcribed_text?: string;
+  message: string;
+  suggestions?: ChatSuggestion[];
+  needs_clarification?: boolean;
+}
+
+interface VoiceInputProps {
+  onResult: (transcribedText: string, response: VoiceResponse) => void;
+  disabled: boolean;
+}
+
+export default function VoiceInput({ onResult, disabled }: VoiceInputProps) {
   const [recording, setRecording] = useState(false);
   const [processing, setProcessing] = useState(false);
-  const mediaRecorderRef = useRef(null);
-  const chunksRef = useRef([]);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
 
   const startRecording = async () => {
     try {
@@ -18,7 +31,7 @@ export default function VoiceInput({ onResult, disabled }) {
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
 
-      mediaRecorder.ondataavailable = (e) => {
+      mediaRecorder.ondataavailable = (e: BlobEvent) => {
         if (e.data.size > 0) {
           chunksRef.current.push(e.data);
         }
@@ -33,7 +46,8 @@ export default function VoiceInput({ onResult, disabled }) {
         // Convert to base64
         const reader = new FileReader();
         reader.onloadend = async () => {
-          const base64 = reader.result.split(',')[1];
+          const result = reader.result as string;
+          const base64 = result.split(',')[1];
           await processAudio(base64);
         };
         reader.readAsDataURL(blob);
@@ -54,7 +68,7 @@ export default function VoiceInput({ onResult, disabled }) {
     }
   };
 
-  const processAudio = async (audioBase64) => {
+  const processAudio = async (audioBase64: string) => {
     setProcessing(true);
     try {
       const response = await api.voiceOrder(audioBase64);

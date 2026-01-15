@@ -1,21 +1,28 @@
-import { useState } from 'react';
+import { useState, MouseEvent, TouchEvent, ChangeEvent } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Minus, ShoppingCart } from 'lucide-react';
+import { Plus, Minus, ShoppingCart, Heart } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { useFavorites } from '../../context/FavoritesContext';
 import ProductDetailModal from './ProductDetailModal';
+import type { Product } from '../../types';
 
 // Detect touch device to disable hover animations
-const isTouchDevice = () => {
+const isTouchDevice = (): boolean => {
   if (typeof window === 'undefined') return false;
   return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 };
 
-export default function ProductCard({ product }) {
+interface ProductCardProps {
+  product: Product;
+}
+
+export default function ProductCard({ product }: ProductCardProps) {
   const [quantity, setQuantity] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const { addItem } = useCart();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
-  const handleAddToCart = (e) => {
+  const handleAddToCart = (e?: MouseEvent) => {
     if (e) {
       e.stopPropagation();
       e.preventDefault();
@@ -25,14 +32,20 @@ export default function ProductCard({ product }) {
   };
 
   // Direct touch handler for mobile - bypasses potential event issues
-  const handleTouchEnd = (e) => {
+  const handleTouchEnd = (e: TouchEvent) => {
     e.stopPropagation();
     e.preventDefault();
     handleAddToCart();
   };
 
-  const getCategoryColor = (category) => {
-    const colors = {
+  const handleFavoriteClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    toggleFavorite(product.id);
+  };
+
+  const getCategoryColor = (category: string): string => {
+    const colors: Record<string, string> = {
       'Proteins': 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300',
       'Produce': 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300',
       'Dairy': 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300',
@@ -45,6 +58,7 @@ export default function ProductCard({ product }) {
   };
 
   const isTouch = isTouchDevice();
+  const favorited = isFavorite(product.id);
 
   return (
     <>
@@ -56,7 +70,7 @@ export default function ProductCard({ product }) {
       onClick={() => setShowModal(true)}
     >
       {/* Product Image */}
-      <div className="h-32 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center overflow-hidden">
+      <div className="h-32 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center overflow-hidden relative">
         {product.image_url ? (
           <img
             src={product.image_url}
@@ -74,6 +88,21 @@ export default function ProductCard({ product }) {
             {product.category === 'Supplies' && '📦'}
           </span>
         )}
+
+        {/* Favorite Button */}
+        <button
+          onClick={handleFavoriteClick}
+          className="absolute top-2 right-2 p-1.5 bg-white/80 dark:bg-slate-800/80 rounded-full hover:bg-white dark:hover:bg-slate-700 transition-colors"
+          title={favorited ? 'Remove from Order Guide' : 'Add to Order Guide'}
+        >
+          <Heart
+            className={`w-5 h-5 transition-colors ${
+              favorited
+                ? 'fill-pink-500 text-pink-500'
+                : 'text-gray-400 hover:text-pink-500'
+            }`}
+          />
+        </button>
       </div>
 
       <div className="p-4">
@@ -120,7 +149,7 @@ export default function ProductCard({ product }) {
               type="number"
               value={quantity}
               onClick={(e) => e.stopPropagation()}
-              onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
               className="w-12 text-center border-x border-gray-300 dark:border-slate-600 py-1 focus:outline-none bg-white dark:bg-slate-800 dark:text-gray-100"
             />
             <button

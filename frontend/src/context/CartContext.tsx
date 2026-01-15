@@ -1,8 +1,29 @@
-import { createContext, useContext, useReducer } from 'react';
+import { createContext, useContext, useReducer, ReactNode } from 'react';
+import type { Product, CartItem } from '../types';
 
-const CartContext = createContext();
+interface CartState {
+  items: CartItem[];
+}
 
-const cartReducer = (state, action) => {
+type CartAction =
+  | { type: 'ADD_ITEM'; payload: CartItem }
+  | { type: 'UPDATE_QUANTITY'; payload: { productId: number; quantity: number } }
+  | { type: 'REMOVE_ITEM'; payload: number }
+  | { type: 'CLEAR_CART' };
+
+interface CartContextValue {
+  items: CartItem[];
+  addItem: (product: Product, quantity?: number) => void;
+  updateQuantity: (productId: number, quantity: number) => void;
+  removeItem: (productId: number) => void;
+  clearCart: () => void;
+  getTotal: () => number;
+  getItemCount: () => number;
+}
+
+const CartContext = createContext<CartContextValue | null>(null);
+
+const cartReducer = (state: CartState, action: CartAction): CartState => {
   switch (action.type) {
     case 'ADD_ITEM': {
       const existingIndex = state.items.findIndex(
@@ -47,18 +68,22 @@ const cartReducer = (state, action) => {
   }
 };
 
-export function CartProvider({ children }) {
+interface CartProviderProps {
+  children: ReactNode;
+}
+
+export function CartProvider({ children }: CartProviderProps) {
   const [state, dispatch] = useReducer(cartReducer, { items: [] });
 
-  const addItem = (product, quantity = 1) => {
+  const addItem = (product: Product, quantity: number = 1) => {
     dispatch({ type: 'ADD_ITEM', payload: { product, quantity } });
   };
 
-  const updateQuantity = (productId, quantity) => {
+  const updateQuantity = (productId: number, quantity: number) => {
     dispatch({ type: 'UPDATE_QUANTITY', payload: { productId, quantity } });
   };
 
-  const removeItem = (productId) => {
+  const removeItem = (productId: number) => {
     dispatch({ type: 'REMOVE_ITEM', payload: productId });
   };
 
@@ -66,14 +91,14 @@ export function CartProvider({ children }) {
     dispatch({ type: 'CLEAR_CART' });
   };
 
-  const getTotal = () => {
+  const getTotal = (): number => {
     return state.items.reduce(
       (total, item) => total + item.product.price * item.quantity,
       0
     );
   };
 
-  const getItemCount = () => {
+  const getItemCount = (): number => {
     return state.items.reduce((count, item) => count + item.quantity, 0);
   };
 
@@ -92,7 +117,7 @@ export function CartProvider({ children }) {
   );
 }
 
-export function useCart() {
+export function useCart(): CartContextValue {
   const context = useContext(CartContext);
   if (!context) {
     throw new Error('useCart must be used within a CartProvider');

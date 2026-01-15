@@ -1,13 +1,33 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import { Plus, Minus, ShoppingCart } from 'lucide-react';
 import Modal from '../UI/Modal';
 import NutritionFacts from './NutritionFacts';
 import { useCart } from '../../context/CartContext';
 import { api } from '../../services/api';
+import type { Product } from '../../types';
 
-export default function ProductDetailModal({ product, isOpen, onClose }) {
+interface NutritionData {
+  serving_size?: string;
+  calories?: number | null;
+  nutrients?: Array<{
+    name: string;
+    amount: number;
+    unit: string;
+    daily_value: number | null;
+  }>;
+  cached?: boolean;
+  error?: string;
+}
+
+interface ProductDetailModalProps {
+  product: Product | null;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export default function ProductDetailModal({ product, isOpen, onClose }: ProductDetailModalProps) {
   const [quantity, setQuantity] = useState(1);
-  const [nutrition, setNutrition] = useState(null);
+  const [nutrition, setNutrition] = useState<NutritionData | null>(null);
   const [loadingNutrition, setLoadingNutrition] = useState(false);
   const { addItem } = useCart();
 
@@ -28,12 +48,14 @@ export default function ProductDetailModal({ product, isOpen, onClose }) {
   }, [isOpen, product]);
 
   const handleAddToCart = () => {
-    addItem(product, quantity);
-    onClose();
+    if (product) {
+      addItem(product, quantity);
+      onClose();
+    }
   };
 
-  const getCategoryColor = (category) => {
-    const colors = {
+  const getCategoryColor = (category: string): string => {
+    const colors: Record<string, string> = {
       'Proteins': 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300',
       'Produce': 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300',
       'Dairy': 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300',
@@ -113,7 +135,7 @@ export default function ProductDetailModal({ product, isOpen, onClose }) {
                 <input
                   type="number"
                   value={quantity}
-                  onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
                   className="w-16 text-center border-x border-gray-300 dark:border-slate-600 py-2 focus:outline-none text-lg bg-white dark:bg-slate-800 dark:text-gray-100"
                 />
                 <button

@@ -1,10 +1,10 @@
 // Check if push notifications are supported and permitted
-export function canShowPushNotification() {
+export function canShowPushNotification(): boolean {
   return 'Notification' in window && Notification.permission === 'granted';
 }
 
 // Request notification permission from the browser
-export async function requestNotificationPermission() {
+export async function requestNotificationPermission(): Promise<boolean> {
   if (!('Notification' in window)) return false;
   if (Notification.permission === 'granted') return true;
   if (Notification.permission === 'denied') return false;
@@ -14,15 +14,15 @@ export async function requestNotificationPermission() {
 }
 
 // Vibrate the device (mobile only)
-function vibrate() {
+function vibrate(): void {
   if ('vibrate' in navigator) {
     navigator.vibrate([200, 100, 200]); // vibrate-pause-vibrate pattern
   }
 }
 
 // Schedule a delivery notification after a delay
-// Dispatches a custom event that App.jsx listens for as fallback
-export function scheduleDeliveryNotification(orderId, delayMs = 10000) {
+// Dispatches a custom event that App.tsx listens for as fallback
+export function scheduleDeliveryNotification(orderId: number, delayMs: number = 10000): void {
   window.setTimeout(() => {
     const title = 'Order Delivered!';
     const message = `Your order #${orderId} has been delivered.`;

@@ -1,10 +1,21 @@
 import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { api } from '../../services/api';
+import type { Category } from '../../types';
 
-export default function CategorySidebar({ selectedCategory, onSelectCategory }) {
-  const [categories, setCategories] = useState([]);
-  const [expanded, setExpanded] = useState({});
+interface SelectedCategory {
+  name: string;
+  subcategory?: string;
+}
+
+interface CategorySidebarProps {
+  selectedCategory: SelectedCategory | null;
+  onSelectCategory: (category: SelectedCategory | null) => void;
+}
+
+export default function CategorySidebar({ selectedCategory, onSelectCategory }: CategorySidebarProps) {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -16,8 +27,8 @@ export default function CategorySidebar({ selectedCategory, onSelectCategory }) 
       const data = await api.getCategories();
       setCategories(data);
       // Expand all categories by default
-      const expandedState = {};
-      data.forEach(cat => {
+      const expandedState: Record<string, boolean> = {};
+      data.forEach((cat: Category) => {
         expandedState[cat.name] = true;
       });
       setExpanded(expandedState);
@@ -28,14 +39,14 @@ export default function CategorySidebar({ selectedCategory, onSelectCategory }) 
     }
   };
 
-  const toggleExpanded = (categoryName) => {
+  const toggleExpanded = (categoryName: string) => {
     setExpanded(prev => ({
       ...prev,
       [categoryName]: !prev[categoryName]
     }));
   };
 
-  const isSelected = (category, subcategory = null) => {
+  const isSelected = (category: string, subcategory: string | null = null): boolean => {
     if (!selectedCategory) return false;
     if (subcategory) {
       return selectedCategory.name === category && selectedCategory.subcategory === subcategory;

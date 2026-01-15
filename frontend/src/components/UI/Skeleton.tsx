@@ -1,5 +1,9 @@
+interface SkeletonProps {
+  className?: string;
+}
+
 // Base skeleton component with pulse animation
-export function Skeleton({ className = '' }) {
+export function Skeleton({ className = '' }: SkeletonProps) {
   return (
     <div className={`animate-pulse bg-gray-200 dark:bg-slate-700 rounded ${className}`} />
   );
@@ -73,8 +77,12 @@ export function ProductRowSkeleton() {
   );
 }
 
+interface ProductGridSkeletonProps {
+  count?: number;
+}
+
 // Grid of product card skeletons
-export function ProductGridSkeleton({ count = 8 }) {
+export function ProductGridSkeleton({ count = 8 }: ProductGridSkeletonProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {Array.from({ length: count }).map((_, i) => (
@@ -84,8 +92,12 @@ export function ProductGridSkeleton({ count = 8 }) {
   );
 }
 
+interface ProductTableSkeletonProps {
+  count?: number;
+}
+
 // Table of product row skeletons
-export function ProductTableSkeleton({ count = 5 }) {
+export function ProductTableSkeleton({ count = 5 }: ProductTableSkeletonProps) {
   return (
     <>
       {Array.from({ length: count }).map((_, i) => (

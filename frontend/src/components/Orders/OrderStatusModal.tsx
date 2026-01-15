@@ -2,17 +2,32 @@ import { useState, useEffect } from 'react';
 import { CheckCircle } from 'lucide-react';
 import Modal from '../UI/Modal';
 import OrderTimeline from './OrderTimeline';
+import type { Order, OrderStatus } from '../../types';
 
-export default function OrderStatusModal({ isOpen, onClose, order }) {
-  const [currentStatus, setCurrentStatus] = useState('pending');
+interface OrderStatusChangeEvent extends CustomEvent {
+  detail: {
+    orderId: number;
+    status: OrderStatus;
+  };
+}
+
+interface OrderStatusModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  order: Order | null;
+}
+
+export default function OrderStatusModal({ isOpen, onClose, order }: OrderStatusModalProps) {
+  const [currentStatus, setCurrentStatus] = useState<OrderStatus>('pending');
 
   // Listen for status changes
   useEffect(() => {
     if (!order?.id) return;
 
-    const handleStatusChange = (e) => {
-      if (e.detail.orderId === order.id) {
-        setCurrentStatus(e.detail.status);
+    const handleStatusChange = (e: Event) => {
+      const event = e as OrderStatusChangeEvent;
+      if (event.detail.orderId === order.id) {
+        setCurrentStatus(event.detail.status);
       }
     };
 

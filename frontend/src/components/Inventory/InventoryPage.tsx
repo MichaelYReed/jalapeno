@@ -1,20 +1,21 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Search, Package, Pencil, Trash2 } from 'lucide-react';
 import { api } from '../../services/api';
 import ProductForm from './ProductForm';
 import { ProductTableSkeleton } from '../UI/Skeleton';
 import { useToast } from '../../context/ToastContext';
+import type { Product, Category } from '../../types';
 
 export default function InventoryPage() {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
-  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<Product | null>(null);
   const toast = useToast();
 
   useEffect(() => {
@@ -24,7 +25,7 @@ export default function InventoryPage() {
 
   // Escape key to close delete confirmation
   useEffect(() => {
-    const handleEscape = (e) => {
+    const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && deleteConfirm) {
         setDeleteConfirm(null);
       }
@@ -55,7 +56,7 @@ export default function InventoryPage() {
     }
   };
 
-  const handleDelete = async (product) => {
+  const handleDelete = async (product: Product) => {
     try {
       await api.deleteProduct(product.id);
       setProducts(products.filter(p => p.id !== product.id));
@@ -67,22 +68,18 @@ export default function InventoryPage() {
     }
   };
 
-  const handleSave = async (productData, isEdit) => {
-    try {
-      if (isEdit) {
-        const updated = await api.updateProduct(editingProduct.id, productData);
-        setProducts(products.map(p => p.id === updated.id ? updated : p));
-        toast.success(`"${updated.name}" updated`);
-      } else {
-        const created = await api.createProduct(productData);
-        setProducts([...products, created]);
-        toast.success(`"${created.name}" added`);
-      }
-      setShowForm(false);
-      setEditingProduct(null);
-    } catch (err) {
-      throw err; // Let the form handle the error display
+  const handleSave = async (productData: Partial<Product>, isEdit: boolean) => {
+    if (isEdit && editingProduct) {
+      const updated = await api.updateProduct(editingProduct.id, productData);
+      setProducts(products.map(p => p.id === updated.id ? updated : p));
+      toast.success(`"${updated.name}" updated`);
+    } else {
+      const created = await api.createProduct(productData);
+      setProducts([...products, created]);
+      toast.success(`"${created.name}" added`);
     }
+    setShowForm(false);
+    setEditingProduct(null);
   };
 
   const filteredProducts = products.filter(product => {
@@ -93,8 +90,8 @@ export default function InventoryPage() {
     return matchesSearch && matchesCategory;
   });
 
-  const getCategoryEmoji = (category) => {
-    const emojis = {
+  const getCategoryEmoji = (category: string): string => {
+    const emojis: Record<string, string> = {
       'Proteins': '🥩',
       'Produce': '🥬',
       'Dairy': '🧀',
@@ -120,22 +117,29 @@ export default function InventoryPage() {
             </p>
           </div>
         </div>
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-slate-900/50">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Category</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Price</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Barcode</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <ProductTableSkeleton count={5} />
-            </tbody>
-          </table>
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden relative">
+          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white dark:from-slate-800 to-transparent pointer-events-none z-10 md:hidden" />
+          <div className="overflow-x-auto">
+            <p className="md:hidden text-xs text-gray-400 dark:text-gray-500 px-4 py-2 flex items-center gap-1">
+              <span>Swipe to see more</span>
+              <span>→</span>
+            </p>
+            <table className="w-full">
+              <thead className="bg-gray-50 dark:bg-slate-900/50">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider max-w-[280px]">Product</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Category</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Price</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Barcode</th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ProductTableSkeleton count={5} />
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     );
@@ -174,13 +178,13 @@ export default function InventoryPage() {
             type="text"
             placeholder="Search products..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 dark:text-gray-100 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-colors"
           />
         </div>
         <select
           value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLSelectElement>) => setSelectedCategory(e.target.value)}
           className="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 dark:text-gray-100 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-colors"
         >
           <option value="">All Categories</option>
@@ -196,12 +200,19 @@ export default function InventoryPage() {
       </p>
 
       {/* Product List */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden relative">
+        {/* Scroll hint gradient - visible on mobile */}
+        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white dark:from-slate-800 to-transparent pointer-events-none z-10 md:hidden" />
         <div className="overflow-x-auto">
+          {/* Scroll hint text - visible on mobile */}
+          <p className="md:hidden text-xs text-gray-400 dark:text-gray-500 px-4 py-2 flex items-center gap-1">
+            <span>Swipe to see more</span>
+            <span>→</span>
+          </p>
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-slate-900/50">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Product</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider max-w-[280px]">Product</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Category</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Price</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Stock</th>
@@ -212,23 +223,23 @@ export default function InventoryPage() {
             <tbody className="divide-y divide-gray-200 dark:divide-slate-700">
               {filteredProducts.map((product) => (
                 <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
-                  <td className="px-4 py-4">
+                  <td className="px-4 py-4 max-w-[280px]">
                     <div className="flex items-center gap-3">
                       {product.image_url ? (
                         <img
                           src={product.image_url}
                           alt={product.name}
-                          className="w-10 h-10 rounded-lg object-cover"
+                          className="w-10 h-10 rounded-lg object-cover flex-shrink-0"
                         />
                       ) : (
-                        <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-slate-700 flex items-center justify-center text-lg">
+                        <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-slate-700 flex items-center justify-center text-lg flex-shrink-0">
                           {getCategoryEmoji(product.category)}
                         </div>
                       )}
-                      <div>
-                        <p className="font-medium text-gray-900 dark:text-gray-100">{product.name}</p>
+                      <div className="min-w-0">
+                        <p className="font-medium text-gray-900 dark:text-gray-100 truncate">{product.name}</p>
                         {product.description && (
-                          <p className="text-sm text-gray-500 dark:text-gray-400 truncate max-w-xs">
+                          <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                             {product.description}
                           </p>
                         )}

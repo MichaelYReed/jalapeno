@@ -1,4 +1,24 @@
-export default function NutritionFacts({ nutrition, loading }) {
+interface Nutrient {
+  name: string;
+  amount: number;
+  unit: string;
+  daily_value: number | null;
+}
+
+interface NutritionData {
+  serving_size?: string;
+  calories?: number | null;
+  nutrients?: Nutrient[];
+  cached?: boolean;
+  error?: string;
+}
+
+interface NutritionFactsProps {
+  nutrition: NutritionData | null;
+  loading: boolean;
+}
+
+export default function NutritionFacts({ nutrition, loading }: NutritionFactsProps) {
   if (loading) {
     return (
       <div className="border-2 border-black dark:border-slate-500 p-4 animate-pulse dark:bg-slate-800">
@@ -32,7 +52,7 @@ export default function NutritionFacts({ nutrition, loading }) {
       )}
 
       {/* Calories */}
-      {nutrition.calories !== null && (
+      {nutrition.calories !== null && nutrition.calories !== undefined && (
         <div className="flex justify-between border-b border-black dark:border-slate-500 py-1 font-bold text-lg">
           <span>Calories</span>
           <span>{Math.round(nutrition.calories)}</span>
@@ -49,7 +69,7 @@ export default function NutritionFacts({ nutrition, loading }) {
         <div
           key={index}
           className={`flex justify-between py-1 ${
-            index < nutrition.nutrients.length - 1 ? 'border-b border-gray-300 dark:border-slate-600' : ''
+            index < nutrition.nutrients!.length - 1 ? 'border-b border-gray-300 dark:border-slate-600' : ''
           }`}
         >
           <span className={nutrient.name.includes('Fat') || nutrient.name.includes('Carbs') || nutrient.name === 'Protein' ? 'font-bold' : 'pl-4'}>

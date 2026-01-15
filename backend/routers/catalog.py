@@ -65,7 +65,8 @@ async def get_products(
             "unit": p.unit,
             "price": p.price,
             "image_url": p.image_url,
-            "in_stock": p.in_stock
+            "in_stock": p.in_stock,
+            "barcode": p.barcode
         }
         for p in products
     ]
@@ -99,7 +100,8 @@ async def get_product(product_id: int, db: Session = Depends(get_db)):
         "unit": product.unit,
         "price": product.price,
         "image_url": product.image_url,
-        "in_stock": product.in_stock
+        "in_stock": product.in_stock,
+        "barcode": product.barcode
     }
 
     # Cache result

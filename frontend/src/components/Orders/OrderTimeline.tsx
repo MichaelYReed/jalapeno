@@ -1,18 +1,29 @@
-import { Clock, CheckCircle, Truck, MapPin, Check } from 'lucide-react';
+import { Clock, CheckCircle, Truck, MapPin, Check, LucideIcon } from 'lucide-react';
 import { getStatuses, isStatusComplete, isStatusCurrent, getStatusTimestamps } from '../../services/orderStatusService';
+import type { OrderStatus } from '../../types';
 
-const STATUS_CONFIG = {
+interface StatusConfig {
+  icon: LucideIcon;
+  label: string;
+}
+
+const STATUS_CONFIG: Record<string, StatusConfig> = {
   pending: { icon: Clock, label: 'Pending' },
   confirmed: { icon: CheckCircle, label: 'Confirmed' },
   shipped: { icon: Truck, label: 'Shipped' },
   delivered: { icon: MapPin, label: 'Delivered' }
 };
 
-export default function OrderTimeline({ orderId, currentStatus }) {
+interface OrderTimelineProps {
+  orderId: number;
+  currentStatus: OrderStatus;
+}
+
+export default function OrderTimeline({ orderId, currentStatus }: OrderTimelineProps) {
   const statuses = getStatuses();
   const timestamps = getStatusTimestamps(orderId);
 
-  const formatTime = (isoString) => {
+  const formatTime = (isoString: string | undefined): string | null => {
     if (!isoString) return null;
     return new Date(isoString).toLocaleTimeString('en-US', {
       hour: 'numeric',
@@ -34,7 +45,7 @@ export default function OrderTimeline({ orderId, currentStatus }) {
           }}
         />
 
-        {statuses.map((status, index) => {
+        {statuses.map((status) => {
           const config = STATUS_CONFIG[status];
           const Icon = config.icon;
           const isComplete = isStatusComplete(currentStatus, status);

@@ -7,12 +7,18 @@ import { useToast } from '../../context/ToastContext';
 import { requestNotificationPermission, scheduleDeliveryNotification } from '../../services/notificationService';
 import { startStatusProgression } from '../../services/orderStatusService';
 import OrderStatusModal from '../Orders/OrderStatusModal';
+import type { Order } from '../../types';
 
-export default function CartDrawer({ open, onClose }) {
+interface CartDrawerProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+export default function CartDrawer({ open, onClose }: CartDrawerProps) {
   const { items, updateQuantity, removeItem, clearCart, getTotal } = useCart();
   const [submitting, setSubmitting] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
-  const [placedOrder, setPlacedOrder] = useState(null);
+  const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
   const toast = useToast();
 
   const handleCheckout = async () => {

@@ -2,11 +2,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { Package, Loader2, Clock, CheckCircle, Truck, MapPin } from 'lucide-react';
 import { api } from '../../services/api';
 import OrderTimeline from './OrderTimeline';
+import type { Order, OrderStatus } from '../../types';
 
 export default function OrderHistory() {
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   const loadOrders = useCallback(async () => {
     try {
@@ -37,7 +38,7 @@ export default function OrderHistory() {
     };
   }, [loadOrders]);
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (status: OrderStatus) => {
     switch (status) {
       case 'pending':
         return <Clock className="w-4 h-4" />;
@@ -52,7 +53,7 @@ export default function OrderHistory() {
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: OrderStatus): string => {
     switch (status) {
       case 'pending':
         return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300';
@@ -69,7 +70,7 @@ export default function OrderHistory() {
     }
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string): string => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',

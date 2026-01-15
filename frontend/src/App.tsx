@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, MessageSquare, Package, Menu, X, Moon, Sun, Camera, PackageOpen } from 'lucide-react';
+import { ShoppingCart, MessageSquare, Package, Menu, X, Moon, Sun, Camera, PackageOpen, Heart, LogOut } from 'lucide-react';
 import ProductGrid from './components/Catalog/ProductGrid';
 import CategorySidebar from './components/Catalog/CategorySidebar';
 import CartDrawer from './components/Cart/CartDrawer';
@@ -8,16 +8,22 @@ import Chat from './components/AIAssistant/Chat';
 import OrderHistory from './components/Orders/OrderHistory';
 import BarcodeScanner from './components/BarcodeScanner/BarcodeScanner';
 import InventoryPage from './components/Inventory/InventoryPage';
+import OrderGuide from './components/OrderGuide/OrderGuide';
+import LoginPage from './components/Auth/LoginPage';
 import ToastContainer from './components/UI/Toast';
 import { useCart } from './context/CartContext';
 import { useTheme } from './context/ThemeContext';
 import { useToast } from './context/ToastContext';
+import { useAuth } from './context/AuthContext';
+
+type TabType = 'catalog' | 'assistant' | 'orders' | 'inventory' | 'orderguide';
 
 function App() {
   const { isDark, toggleTheme } = useTheme();
-  const [activeTab, setActiveTab] = useState('catalog');
+  const { user, isAuthenticated, logout } = useAuth();
+  const [activeTab, setActiveTab] = useState<TabType>('catalog');
   const [cartOpen, setCartOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [scannerOpen, setScannerOpen] = useState(false);
@@ -40,28 +46,33 @@ function App() {
 
   // Listen for delivery notification events (fallback for mobile)
   useEffect(() => {
-    const handleDeliveryNotification = (event) => {
+    const handleDeliveryNotification = (event: CustomEvent<{ title: string; message: string }>) => {
       const { title, message } = event.detail;
       toast.success(`${title} ${message}`);
     };
 
-    window.addEventListener('deliveryNotification', handleDeliveryNotification);
+    window.addEventListener('deliveryNotification', handleDeliveryNotification as EventListener);
     return () => {
-      window.removeEventListener('deliveryNotification', handleDeliveryNotification);
+      window.removeEventListener('deliveryNotification', handleDeliveryNotification as EventListener);
     };
   }, [toast]);
 
   // Listen for tab navigation events (from OrderStatusModal)
   useEffect(() => {
-    const handleNavigate = (event) => {
+    const handleNavigate = (event: CustomEvent<TabType>) => {
       setActiveTab(event.detail);
     };
 
-    window.addEventListener('navigateToTab', handleNavigate);
+    window.addEventListener('navigateToTab', handleNavigate as EventListener);
     return () => {
-      window.removeEventListener('navigateToTab', handleNavigate);
+      window.removeEventListener('navigateToTab', handleNavigate as EventListener);
     };
   }, []);
+
+  // Show login page if not authenticated
+  if (!isAuthenticated) {
+    return <LoginPage />;
+  }
 
   return (
     <>
@@ -77,9 +88,16 @@ function App() {
               >
                 <Menu className="w-6 h-6 dark:text-gray-200" />
               </button>
-              <h1 className="text-2xl font-bold text-primary-600 dark:text-primary-400">
-                Jalapeño
-              </h1>
+              <div>
+                <h1 className="text-2xl font-bold text-primary-600 dark:text-primary-400">
+                  Jalapeño
+                </h1>
+                {user?.company && (
+                  <p className="text-sm italic text-gray-600 dark:text-gray-300 tracking-wide">
+                    {user.company}
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* Navigation */}
@@ -94,6 +112,17 @@ function App() {
               >
                 <Package className="w-5 h-5" />
                 Catalog
+              </button>
+              <button
+                onClick={() => setActiveTab('orderguide')}
+                className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-colors ${
+                  activeTab === 'orderguide'
+                    ? 'bg-pink-100 text-pink-700 dark:bg-pink-900/50 dark:text-pink-300'
+                    : 'hover:bg-gray-100 dark:hover:bg-slate-800 dark:text-gray-200'
+                }`}
+              >
+                <Heart className="w-5 h-5" />
+                Order Guide
               </button>
               <button
                 onClick={() => setActiveTab('assistant')}
@@ -130,8 +159,20 @@ function App() {
               </button>
             </nav>
 
-            {/* Theme Toggle & Cart */}
+            {/* Theme Toggle, Cart & Logout */}
             <div className="flex items-center gap-2">
+              {user?.name && (
+                <span className="hidden sm:flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-slate-800 px-2.5 py-1 rounded-full">
+                  {user.name}
+                </span>
+              )}
+              <button
+                onClick={logout}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                title="Sign out"
+              >
+                <LogOut className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+              </button>
               <button
                 onClick={toggleTheme}
                 className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
@@ -169,6 +210,17 @@ function App() {
             >
               <Package className="w-4 h-4" />
               Catalog
+            </button>
+            <button
+              onClick={() => setActiveTab('orderguide')}
+              className={`px-4 py-2 rounded-lg flex items-center gap-2 whitespace-nowrap transition-colors ${
+                activeTab === 'orderguide'
+                  ? 'bg-pink-100 text-pink-700 dark:bg-pink-900/50 dark:text-pink-300'
+                  : 'bg-gray-100 dark:bg-slate-800 dark:text-gray-200'
+              }`}
+            >
+              <Heart className="w-4 h-4" />
+              Order Guide
             </button>
             <button
               onClick={() => setActiveTab('assistant')}
@@ -257,7 +309,7 @@ function App() {
               </div>
               <CategorySidebar
                 selectedCategory={selectedCategory}
-                onSelectCategory={(cat) => {
+                onSelectCategory={(cat: string | null) => {
                   setSelectedCategory(cat);
                   setSidebarOpen(false);
                 }}
@@ -294,6 +346,18 @@ function App() {
                   selectedCategory={selectedCategory}
                 />
               </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'orderguide' && (
+            <motion.div
+              key="orderguide"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <OrderGuide />
             </motion.div>
           )}
 

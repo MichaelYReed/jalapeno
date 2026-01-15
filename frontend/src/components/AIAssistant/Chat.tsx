@@ -1,17 +1,29 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Mic, MicOff, Plus, Loader2 } from 'lucide-react';
+import { Send, Mic, Plus, Loader2 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../context/ToastContext';
 import VoiceInput from './VoiceInput';
+import type { Product, ChatSuggestion, ChatMessage } from '../../types';
+
+interface VoiceResponse {
+  message: string;
+  suggestions?: ChatSuggestion[];
+  needs_clarification?: boolean;
+}
+
+interface CartAddItem {
+  product: Product;
+  quantity: number;
+}
 
 export default function Chat() {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [suggestions, setSuggestions] = useState([]);
-  const messagesEndRef = useRef(null);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const { addItem } = useCart();
   const toast = useToast();
 
@@ -38,10 +50,10 @@ export default function Chat() {
     }
   };
 
-  const handleSend = async (messageText = input) => {
+  const handleSend = async (messageText: string = input) => {
     if (!messageText.trim() || loading) return;
 
-    const userMessage = { role: 'user', content: messageText };
+    const userMessage: ChatMessage = { role: 'user', content: messageText };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setLoading(true);
@@ -68,7 +80,7 @@ export default function Chat() {
         messageText,
         conversationHistory,
         // onChunk - append text as it streams
-        (text) => {
+        (text: string) => {
           setMessages(prev => prev.map(m =>
             m.id === assistantMessageId
               ? { ...m, content: m.content + text }
@@ -76,15 +88,15 @@ export default function Chat() {
           ));
         },
         // onSuggestions - add product cards
-        (suggestions) => {
+        (newSuggestions: ChatSuggestion[]) => {
           setMessages(prev => prev.map(m =>
             m.id === assistantMessageId
-              ? { ...m, suggestions }
+              ? { ...m, suggestions: newSuggestions }
               : m
           ));
         },
         // onCartAdd - add items directly to cart
-        (items) => {
+        (items: CartAddItem[]) => {
           items.forEach(item => {
             addItem(item.product, item.quantity);
           });
@@ -100,7 +112,7 @@ export default function Chat() {
           setLoading(false);
         },
         // onError
-        (error) => {
+        (error: Error) => {
           console.error('Stream error:', error);
           setMessages(prev => prev.map(m =>
             m.id === assistantMessageId
@@ -121,7 +133,7 @@ export default function Chat() {
     }
   };
 
-  const handleVoiceResult = async (transcribedText, response) => {
+  const handleVoiceResult = async (transcribedText: string, response: VoiceResponse) => {
     // Add the transcribed message
     setMessages(prev => [...prev, {
       role: 'user',
@@ -133,13 +145,18 @@ export default function Chat() {
     setMessages(prev => [...prev, {
       role: 'assistant',
       content: response.message,
-      suggestions: response.suggestions,
-      needsClarification: response.needs_clarification
+      suggestions: response.suggestions
     }]);
   };
 
-  const handleAddToCart = (suggestion) => {
+  const handleAddToCart = (suggestion: ChatSuggestion) => {
     addItem(suggestion.product, suggestion.suggested_quantity);
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSend();
+    }
   };
 
   return (
@@ -259,7 +276,7 @@ export default function Chat() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+              onKeyDown={handleKeyDown}
               placeholder="Type your order or question..."
               disabled={loading}
               className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:border-primary-400 outline-none disabled:bg-gray-50 dark:disabled:bg-slate-700 placeholder:text-gray-400 dark:placeholder:text-gray-500"

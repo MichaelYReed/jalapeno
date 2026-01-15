@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Jalapeño is an AI-powered food ordering application with natural language chat and voice ordering. It uses a Python/FastAPI backend with PostgreSQL (SQLite fallback for local dev) and a React/Vite frontend. Production deployment uses AWS ECS Fargate via AWS Copilot.
+Jalapeño is a B2B food ordering application for restaurant supply, featuring AI-powered natural language chat, voice ordering, and customer order guides. Built with Python/FastAPI backend (PostgreSQL, SQLite fallback) and React/TypeScript/Vite frontend. Production deployment uses AWS ECS Fargate via AWS Copilot.
 
 ## Development Commands
 
@@ -102,19 +102,33 @@ The AI service uses GPT-4o-mini for chat and Whisper for voice transcription. Ch
 
 ### Frontend
 
-- **App.jsx** - Main component with tab navigation (Catalog, AI Assistant, Orders, Inventory)
-- **context/CartContext.jsx** - Global cart state using React Context + useReducer
-- **context/ToastContext.jsx** - Toast notification system with success/error/info/warning methods
-- **services/api.js** - API client for all backend calls
-- **services/notificationService.js** - Browser push notifications with mobile fallback
-- **components/** - Organized by feature (Catalog, Cart, AIAssistant, Orders, Inventory, BarcodeScanner, UI)
-- **components/UI/Modal.jsx** - Reusable modal component with backdrop and keyboard handling
-- **components/UI/Toast.jsx** - Toast notifications (bottom-right, auto-dismiss after 3s)
-- **components/UI/Skeleton.jsx** - Loading skeleton components (ProductCardSkeleton, ProductRowSkeleton)
-- **components/Catalog/ProductDetailModal.jsx** - Product detail modal with nutrition facts
-- **components/Catalog/NutritionFacts.jsx** - FDA-style nutrition label component
+The frontend is built with React and TypeScript, using Vite for bundling.
+
+- **src/types/index.ts** - Shared TypeScript interfaces (Product, Order, CartItem, User, etc.)
+- **App.tsx** - Main component with tab navigation (Catalog, Order Guide, AI Assistant, Orders, Inventory)
+- **context/AuthContext.tsx** - Simple customer authentication (name + company, persisted to localStorage)
+- **context/CartContext.tsx** - Global cart state using React Context + useReducer
+- **context/FavoritesContext.tsx** - Order guide favorites (product IDs persisted to localStorage)
+- **context/ToastContext.tsx** - Toast notification system with success/error/info/warning methods
+- **context/ThemeContext.tsx** - Dark/light mode toggle
+- **services/api.ts** - API client for all backend calls
+- **services/notificationService.ts** - Browser push notifications with mobile fallback
+- **components/** - Organized by feature (Catalog, Cart, AIAssistant, Orders, Inventory, OrderGuide, BarcodeScanner, Auth, UI)
 
 Vite config proxies `/api` to `localhost:8000` for seamless backend communication.
+
+### B2B Features
+
+**Customer Login** - Simple authentication for B2B context:
+- Login with name and company (no password - demo simplicity)
+- Persisted to localStorage, shown in header
+- Logout button in header
+
+**Order Guide** - B2B industry-standard favorites list:
+- Heart icon on product cards to add/remove favorites
+- Dedicated "Order Guide" tab (pink-styled) shows favorited products
+- Quick "Add to Cart" for individual items or all at once
+- Favorites persisted to localStorage
 
 ### UI Patterns
 
@@ -123,6 +137,7 @@ Vite config proxies `/api` to `localhost:8000` for seamless backend communicatio
 - **Empty states** - Icon + message when no products match filters
 - **Keyboard shortcuts** - Escape key closes all modals (ProductForm, delete confirmation, etc.)
 - **Dark mode** - Full support via ThemeContext, all components have `dark:` Tailwind variants
+- **Mobile scroll hints** - "Swipe to see more" text + fade gradient on horizontally scrollable tables
 
 ### Order Status Tracking
 
@@ -211,7 +226,8 @@ All 71 food products have nutrition data; 7 supplies items are correctly flagged
 | `backend/seed_db.py` | Database seeding and image update script |
 | `backend/fetch_images.py` | Script to fetch product images from Unsplash |
 | `backend/database.py` | SQLAlchemy setup with PostgreSQL/SQLite support |
-| `frontend/vite.config.js` | Dev server proxy configuration |
+| `frontend/vite.config.ts` | Dev server proxy configuration |
+| `frontend/src/types/index.ts` | Shared TypeScript interfaces |
 | `docker-compose.yml` | Local dev with PostgreSQL container |
 | `frontend/nginx.conf` | Production proxy config |
 | `deploy-aws.ps1` | AWS Copilot deployment script |
@@ -335,8 +351,10 @@ When scanning a barcode for inventory, the app auto-fills:
 
 ### Components
 
-- `components/Inventory/InventoryPage.jsx` - Main inventory tab with product table
-- `components/Inventory/ProductForm.jsx` - Add/edit product modal with barcode scanner and auto-fill
-- `components/BarcodeScanner/BarcodeScanner.jsx` - Customer-facing barcode scanner for cart
+- `components/Inventory/InventoryPage.tsx` - Main inventory tab with product table
+- `components/Inventory/ProductForm.tsx` - Add/edit product modal with barcode scanner and auto-fill
+- `components/OrderGuide/OrderGuide.tsx` - Order guide (favorites) tab with quick cart actions
+- `components/Auth/LoginPage.tsx` - Customer login form
+- `components/BarcodeScanner/BarcodeScanner.tsx` - Customer-facing barcode scanner for cart
 - `services/barcode_service.py` - Open Food Facts API integration and similar product search
 - `services/image_service.py` - Unsplash API integration for fallback product images

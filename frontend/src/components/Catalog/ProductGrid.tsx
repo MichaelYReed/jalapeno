@@ -4,9 +4,10 @@ import { api } from '../../services/api';
 import ProductCard from './ProductCard';
 import { Package } from 'lucide-react';
 import { ProductGridSkeleton } from '../UI/Skeleton';
+import type { Product } from '../../types';
 
 // Detect touch device to disable stagger animations that block touch events
-const isTouchDevice = () => {
+const isTouchDevice = (): boolean => {
   if (typeof window === 'undefined') return false;
   return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 };
@@ -31,10 +32,20 @@ const itemVariants = {
   }
 };
 
-export default function ProductGrid({ searchQuery, selectedCategory }) {
-  const [products, setProducts] = useState([]);
+interface SelectedCategory {
+  name: string;
+  subcategory?: string;
+}
+
+interface ProductGridProps {
+  searchQuery: string;
+  selectedCategory: SelectedCategory | string | null;
+}
+
+export default function ProductGrid({ searchQuery, selectedCategory }: ProductGridProps) {
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const isTouch = useMemo(() => isTouchDevice(), []);
 
   useEffect(() => {
@@ -45,10 +56,11 @@ export default function ProductGrid({ searchQuery, selectedCategory }) {
     try {
       setLoading(true);
       setError(null);
+      const categoryObj = typeof selectedCategory === 'object' ? selectedCategory : null;
       const data = await api.getProducts({
         search: searchQuery || undefined,
-        category: selectedCategory?.name || undefined,
-        subcategory: selectedCategory?.subcategory || undefined
+        category: categoryObj?.name || undefined,
+        subcategory: categoryObj?.subcategory || undefined
       });
       setProducts(data);
     } catch (err) {

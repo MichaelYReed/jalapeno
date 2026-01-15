@@ -1,38 +1,59 @@
+import type { Product, Order, OrderStatus, Category, NutritionData, ProductCreateData, OrderCreateItem, ChatSuggestion } from '../types';
+
 const API_BASE = import.meta.env.VITE_API_URL || '/api';
+
+interface ProductFilters {
+  search?: string;
+  category?: string;
+  subcategory?: string;
+}
+
+interface ChatStreamCallbacks {
+  onChunk?: (content: string) => void;
+  onSuggestions?: (suggestions: ChatSuggestion[]) => void;
+  onCartAdd?: (items: Array<{ product: Product; quantity: number }>) => void;
+  onDone?: () => void;
+  onError?: (message: string) => void;
+}
+
+interface ConversationMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
 
 export const api = {
   // Products
-  async getProducts({ search, category, subcategory } = {}) {
+  async getProducts(filters: ProductFilters = {}): Promise<Product[]> {
     const params = new URLSearchParams();
-    if (search) params.append('search', search);
-    if (category) params.append('category', category);
-    if (subcategory) params.append('subcategory', subcategory);
+    if (filters.search) params.append('search', filters.search);
+    if (filters.category) params.append('category', filters.category);
+    if (filters.subcategory) params.append('subcategory', filters.subcategory);
 
     const response = await fetch(`${API_BASE}/products?${params}`);
     if (!response.ok) throw new Error('Failed to fetch products');
     return response.json();
   },
 
-  async getProduct(id) {
+  async getProduct(id: number): Promise<Product> {
     const response = await fetch(`${API_BASE}/products/${id}`);
     if (!response.ok) throw new Error('Failed to fetch product');
     return response.json();
   },
 
-  async getNutrition(productId) {
+  async getNutrition(productId: number): Promise<NutritionData> {
     const response = await fetch(`${API_BASE}/products/${productId}/nutrition`);
     if (!response.ok) throw new Error('Failed to fetch nutrition');
     return response.json();
   },
 
-  async getProductByBarcode(barcode) {
+  async getProductByBarcode(barcode: string): Promise<Product | null> {
     const response = await fetch(`${API_BASE}/products/barcode/${encodeURIComponent(barcode)}`);
     if (response.status === 404) return null;
     if (!response.ok) throw new Error('Failed to lookup barcode');
     return response.json();
   },
 
-  async createProduct(productData) {
+  async createProduct(productData: ProductCreateData): Promise<Product> {
     const response = await fetch(`${API_BASE}/products`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -42,7 +63,7 @@ export const api = {
     return response.json();
   },
 
-  async updateProduct(id, productData) {
+  async updateProduct(id: number, productData: Partial<ProductCreateData>): Promise<Product> {
     const response = await fetch(`${API_BASE}/products/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -52,7 +73,7 @@ export const api = {
     return response.json();
   },
 
-  async deleteProduct(id) {
+  async deleteProduct(id: number): Promise<boolean> {
     const response = await fetch(`${API_BASE}/products/${id}`, {
       method: 'DELETE'
     });
@@ -60,7 +81,7 @@ export const api = {
     return true;
   },
 
-  async searchProductImage(query) {
+  async searchProductImage(query: string): Promise<string | null> {
     try {
       const response = await fetch(`${API_BASE}/images/search?q=${encodeURIComponent(query)}`);
       if (!response.ok) return null;
@@ -71,20 +92,20 @@ export const api = {
     }
   },
 
-  async getCategories() {
+  async getCategories(): Promise<Category[]> {
     const response = await fetch(`${API_BASE}/categories`);
     if (!response.ok) throw new Error('Failed to fetch categories');
     return response.json();
   },
 
-  async autocomplete(query) {
+  async autocomplete(query: string): Promise<Product[]> {
     const response = await fetch(`${API_BASE}/products/search/autocomplete?q=${encodeURIComponent(query)}`);
     if (!response.ok) throw new Error('Failed to fetch suggestions');
     return response.json();
   },
 
   // Orders
-  async createOrder(items) {
+  async createOrder(items: OrderCreateItem[]): Promise<Order> {
     const response = await fetch(`${API_BASE}/orders`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -94,19 +115,19 @@ export const api = {
     return response.json();
   },
 
-  async getOrders() {
+  async getOrders(): Promise<Order[]> {
     const response = await fetch(`${API_BASE}/orders`);
     if (!response.ok) throw new Error('Failed to fetch orders');
     return response.json();
   },
 
-  async getOrder(id) {
+  async getOrder(id: number): Promise<Order> {
     const response = await fetch(`${API_BASE}/orders/${id}`);
     if (!response.ok) throw new Error('Failed to fetch order');
     return response.json();
   },
 
-  async updateOrderStatus(orderId, status) {
+  async updateOrderStatus(orderId: number, status: OrderStatus): Promise<Order> {
     const response = await fetch(`${API_BASE}/orders/${orderId}/status?status=${status}`, {
       method: 'PATCH'
     });
@@ -115,7 +136,7 @@ export const api = {
   },
 
   // AI Assistant
-  async chat(message, conversationHistory = []) {
+  async chat(message: string, conversationHistory: ConversationMessage[] = []): Promise<{ response: string; suggestions?: ChatSuggestion[] }> {
     const response = await fetch(`${API_BASE}/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -128,7 +149,15 @@ export const api = {
     return response.json();
   },
 
-  async chatStream(message, conversationHistory = [], onChunk, onSuggestions, onCartAdd, onDone, onError) {
+  async chatStream(
+    message: string,
+    conversationHistory: ConversationMessage[] = [],
+    onChunk?: ChatStreamCallbacks['onChunk'],
+    onSuggestions?: ChatStreamCallbacks['onSuggestions'],
+    onCartAdd?: ChatStreamCallbacks['onCartAdd'],
+    onDone?: ChatStreamCallbacks['onDone'],
+    onError?: ChatStreamCallbacks['onError']
+  ): Promise<void> {
     const response = await fetch(`${API_BASE}/chat/stream`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -142,7 +171,7 @@ export const api = {
       throw new Error('Failed to start stream');
     }
 
-    const reader = response.body.getReader();
+    const reader = response.body!.getReader();
     const decoder = new TextDecoder();
     let buffer = '';
 
@@ -154,7 +183,7 @@ export const api = {
 
       // Process complete SSE messages
       const lines = buffer.split('\n');
-      buffer = lines.pop(); // Keep incomplete line in buffer
+      buffer = lines.pop() || '';
 
       for (const line of lines) {
         if (line.startsWith('data: ')) {
@@ -171,7 +200,7 @@ export const api = {
             } else if (data.type === 'error') {
               onError?.(data.message);
             }
-          } catch (e) {
+          } catch {
             console.warn('Failed to parse SSE data:', line);
           }
         }
@@ -179,7 +208,7 @@ export const api = {
     }
   },
 
-  async voiceOrder(audioBase64) {
+  async voiceOrder(audioBase64: string): Promise<{ transcription: string; response: string; suggestions?: ChatSuggestion[] }> {
     const response = await fetch(`${API_BASE}/voice`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -189,7 +218,7 @@ export const api = {
     return response.json();
   },
 
-  async getChatSuggestions() {
+  async getChatSuggestions(): Promise<string[]> {
     const response = await fetch(`${API_BASE}/chat/suggestions`);
     if (!response.ok) throw new Error('Failed to fetch suggestions');
     return response.json();
