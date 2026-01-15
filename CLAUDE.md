@@ -98,7 +98,7 @@ Prerequisites: AWS CLI, AWS Copilot CLI, Docker, configured AWS credentials with
 - **services/ai_service.py** - OpenAI integration with lazy client initialization via `get_client()`
 - **services/nutrition_service.py** - USDA FoodData Central API integration with caching and query optimization
 
-The AI service uses GPT-4o-mini for chat (returns JSON with product matches) and Whisper for voice transcription.
+The AI service uses GPT-4o-mini for chat and Whisper for voice transcription. Chat supports both regular JSON responses and streaming via Server-Sent Events (SSE).
 
 ### Frontend
 
@@ -133,6 +133,25 @@ Mock delivery confirmation notifications appear 10 seconds after placing an orde
 - **Implementation**: `notificationService.js` dispatches custom event, `App.jsx` listens and shows toast
 
 The system requests notification permission on first order, then uses push notifications if granted, otherwise falls back to in-app toast.
+
+### AI Assistant
+
+The AI chat uses streaming responses via Server-Sent Events (SSE) for real-time typing effect:
+
+- **Streaming**: Text appears word-by-word as the AI generates it
+- **Product markers**: AI uses inline markers to suggest/add products:
+  - `[[product:Name:qty]]` - Shows product suggestion card (user can click to add)
+  - `[[add-to-cart:Name:qty]]` - Adds item directly to cart (after user confirms)
+
+**Conversation flow:**
+1. User asks for products → AI responds with `[[product:...]]` markers and asks "Add to cart?"
+2. User confirms ("yes", "add them") → AI uses `[[add-to-cart:...]]` to add items directly
+3. Toast notification confirms items added to cart
+
+**Implementation files:**
+- `backend/services/ai_service.py` - Streaming function with marker parsing
+- `frontend/src/services/api.js` - `chatStream()` with SSE parsing and callbacks
+- `frontend/src/components/AIAssistant/Chat.jsx` - Streaming display with product cards
 
 ### Database
 
@@ -216,7 +235,9 @@ The fetch script skips products that already have images. Unsplash free tier all
 | `/api/images/search` | GET | Search Unsplash for product image (fallback for barcode scan) |
 | `/api/categories` | GET | List categories with subcategories |
 | `/api/orders` | GET/POST | List or create orders |
-| `/api/chat` | POST | AI chat for natural language ordering |
+| `/api/chat` | POST | AI chat for natural language ordering (JSON response) |
+| `/api/chat/stream` | POST | AI chat with streaming SSE response |
+| `/api/chat/suggestions` | GET | Get example chat prompts |
 | `/api/voice` | POST | Voice-to-order via Whisper transcription |
 | `/health` | GET | Health check endpoint for AWS ALB |
 
