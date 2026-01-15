@@ -124,9 +124,22 @@ Vite config proxies `/api` to `localhost:8000` for seamless backend communicatio
 - **Keyboard shortcuts** - Escape key closes all modals (ProductForm, delete confirmation, etc.)
 - **Dark mode** - Full support via ThemeContext, all components have `dark:` Tailwind variants
 
+### Order Status Tracking
+
+Mock order status tracking shows visual timeline progression after placing an order:
+
+- **Status flow**: Pending (0s) → Confirmed (5s) → Shipped (15s) → Delivered (30s)
+- **Order Status Modal**: Appears after clicking "Place Order" with live-updating timeline
+- **OrderTimeline component**: Visual progress bar with checkmarks and timestamps
+- **Implementation**:
+  - `orderStatusService.js` - Manages status progression timers, localStorage timestamps, dispatches `orderStatusChange` events
+  - `OrderStatusModal.jsx` - Modal with success message, timeline, and action buttons
+  - `OrderTimeline.jsx` - Reusable timeline component used in modal and OrderHistory
+- **Cross-component communication**: Uses custom window events (`orderStatusChange`, `navigateToTab`)
+
 ### Delivery Notifications
 
-Mock delivery confirmation notifications appear 10 seconds after placing an order:
+Mock delivery confirmation notifications appear 30 seconds after placing an order (when status becomes "Delivered"):
 
 - **Desktop**: Browser push notification via Web Notifications API
 - **Mobile fallback**: In-app toast notification + device vibration
