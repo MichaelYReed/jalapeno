@@ -321,6 +321,7 @@ CloudFront serves the frontend over HTTPS and proxies `/api/*` requests to the b
 AWS resources are managed by Copilot. Secrets stored in SSM Parameter Store at:
 - `/copilot/jalapeno/prod/secrets/OPENAI_API_KEY`
 - `/copilot/jalapeno/prod/secrets/USDA_API_KEY`
+- `/copilot/jalapeno/prod/secrets/UNSPLASH_ACCESS_KEY` (optional, for barcode image fallback)
 
 **Live URLs:**
 - Frontend (HTTPS): https://dknu09xe73cdt.cloudfront.net
@@ -344,6 +345,14 @@ The app uses Quagga2 library for barcode scanning:
 1. **Customer scanning** - Scan product barcode in catalog to quickly add to cart
 2. **Inventory scanning** - Scan barcode when adding products to pre-fill form data from Open Food Facts
 3. **Fallback search** - If barcode not in local DB, looks up Open Food Facts and shows similar local products
+
+**API behavior**: The `/api/products/barcode/{barcode}` endpoint always returns HTTP 200 to avoid CloudFront's 404 → index.html error page behavior. Response format:
+- Direct match: `{id, name, price, ...}` (product fields)
+- Fallback: `{found: false, external_name: "...", similar_products: [...]}`
+
+**Similar products search**: Filters out numeric-only words (like "365") and uses first 5 significant words from product name to find matches in local database.
+
+**Scanner state management**: The BarcodeScanner component properly cleans up Quagga event handlers (`Quagga.offDetected()`) and resets all state (including `loading`, `similarProducts`, `externalName`) when closing to ensure reliable re-scanning.
 
 When scanning a barcode for inventory, the app auto-fills:
 - **Name** - Product name from Open Food Facts

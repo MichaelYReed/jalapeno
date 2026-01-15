@@ -173,29 +173,28 @@ async def get_product_by_barcode(barcode: str, db: Session = Depends(get_db)):
 
     # Fallback: Look up external barcode database and search for similar products
     external = await lookup_external_barcode(barcode)
-    if external and external.get("name"):
-        similar = search_similar_products(external["name"], db)
-        if similar:
-            return {
-                "found": False,
-                "external_name": external["name"],
-                "similar_products": [
-                    {
-                        "id": p.id,
-                        "name": p.name,
-                        "description": p.description,
-                        "category": p.category,
-                        "subcategory": p.subcategory,
-                        "price": p.price,
-                        "unit": p.unit,
-                        "image_url": p.image_url,
-                        "in_stock": p.in_stock
-                    }
-                    for p in similar
-                ]
-            }
+    external_name = external.get("name") if external else None
+    similar = search_similar_products(external_name, db) if external_name else []
 
-    raise HTTPException(status_code=404, detail="Product not found for this barcode")
+    # Always return 200 to avoid CloudFront's 404 -> index.html error page
+    return {
+        "found": False,
+        "external_name": external_name,
+        "similar_products": [
+            {
+                "id": p.id,
+                "name": p.name,
+                "description": p.description,
+                "category": p.category,
+                "subcategory": p.subcategory,
+                "price": p.price,
+                "unit": p.unit,
+                "image_url": p.image_url,
+                "in_stock": p.in_stock
+            }
+            for p in similar
+        ]
+    }
 
 
 @router.get("/categories")

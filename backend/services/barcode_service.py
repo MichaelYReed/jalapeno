@@ -32,14 +32,14 @@ def search_similar_products(name: str, db: Session, limit: int = 5) -> list:
         return []
 
     # Split name into words and search for any match
-    # Filter out short words and common words
+    # Filter out short words, common words, and numeric-only words (like "365")
     stop_words = {'the', 'and', 'for', 'with', 'from'}
-    words = [w for w in name.lower().split() if len(w) > 2 and w not in stop_words]
+    words = [w for w in name.lower().split() if len(w) > 2 and w not in stop_words and not w.strip(',-').isdigit()]
     if not words:
         return []
 
-    # Build OR conditions for each word (use first 3 significant words)
-    conditions = [Product.name.ilike(f"%{word}%") for word in words[:3]]
+    # Build OR conditions for each word (use first 5 significant words)
+    conditions = [Product.name.ilike(f"%{word}%") for word in words[:5]]
 
     products = db.query(Product).filter(or_(*conditions)).limit(limit).all()
     return products
