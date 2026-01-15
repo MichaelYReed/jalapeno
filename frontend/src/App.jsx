@@ -51,6 +51,18 @@ function App() {
     };
   }, [toast]);
 
+  // Listen for tab navigation events (from OrderStatusModal)
+  useEffect(() => {
+    const handleNavigate = (event) => {
+      setActiveTab(event.detail);
+    };
+
+    window.addEventListener('navigateToTab', handleNavigate);
+    return () => {
+      window.removeEventListener('navigateToTab', handleNavigate);
+    };
+  }, []);
+
   return (
     <>
     <div className="min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors">

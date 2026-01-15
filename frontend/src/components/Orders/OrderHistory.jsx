@@ -1,17 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Package, Loader2, Clock, CheckCircle, Truck, MapPin } from 'lucide-react';
 import { api } from '../../services/api';
+import OrderTimeline from './OrderTimeline';
 
 export default function OrderHistory() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    loadOrders();
-  }, []);
-
-  const loadOrders = async () => {
+  const loadOrders = useCallback(async () => {
     try {
       setLoading(true);
       const data = await api.getOrders();
@@ -22,7 +19,23 @@ export default function OrderHistory() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadOrders();
+  }, [loadOrders]);
+
+  // Listen for status changes to refresh order list
+  useEffect(() => {
+    const handleStatusChange = () => {
+      loadOrders();
+    };
+
+    window.addEventListener('orderStatusChange', handleStatusChange);
+    return () => {
+      window.removeEventListener('orderStatusChange', handleStatusChange);
+    };
+  }, [loadOrders]);
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -121,8 +134,13 @@ export default function OrderHistory() {
               </div>
             </div>
 
+            {/* Order Timeline */}
+            <div className="px-4">
+              <OrderTimeline orderId={order.id} currentStatus={order.status} />
+            </div>
+
             {/* Order Items */}
-            <div className="p-4">
+            <div className="p-4 pt-0">
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
                 {order.items.length} item{order.items.length !== 1 ? 's' : ''}
               </p>

@@ -5,10 +5,14 @@ import { api } from '../../services/api';
 import { useState } from 'react';
 import { useToast } from '../../context/ToastContext';
 import { requestNotificationPermission, scheduleDeliveryNotification } from '../../services/notificationService';
+import { startStatusProgression } from '../../services/orderStatusService';
+import OrderStatusModal from '../Orders/OrderStatusModal';
 
 export default function CartDrawer({ open, onClose }) {
   const { items, updateQuantity, removeItem, clearCart, getTotal } = useCart();
   const [submitting, setSubmitting] = useState(false);
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [placedOrder, setPlacedOrder] = useState(null);
   const toast = useToast();
 
   const handleCheckout = async () => {
@@ -24,13 +28,19 @@ export default function CartDrawer({ open, onClose }) {
       const order = await api.createOrder(orderItems);
       clearCart();
       onClose();
-      toast.success('Order placed successfully!');
+
+      // Show order status modal
+      setPlacedOrder(order);
+      setShowStatusModal(true);
 
       // Request notification permission (will be silent if already granted/denied)
       await requestNotificationPermission();
 
-      // Schedule mock delivery notification after 10 seconds
-      scheduleDeliveryNotification(order.id);
+      // Start mock status progression (pending → confirmed → shipped → delivered)
+      startStatusProgression(order.id);
+
+      // Schedule mock delivery notification after 30 seconds (when status becomes delivered)
+      scheduleDeliveryNotification(order.id, 30000);
     } catch (err) {
       console.error('Failed to create order:', err);
       toast.error('Failed to place order. Please try again.');
@@ -40,6 +50,7 @@ export default function CartDrawer({ open, onClose }) {
   };
 
   return (
+    <>
     <AnimatePresence>
       {open && (
         <>
@@ -168,5 +179,12 @@ export default function CartDrawer({ open, onClose }) {
         </>
       )}
     </AnimatePresence>
+
+    <OrderStatusModal
+      isOpen={showStatusModal}
+      onClose={() => setShowStatusModal(false)}
+      order={placedOrder}
+    />
+  </>
   );
 }

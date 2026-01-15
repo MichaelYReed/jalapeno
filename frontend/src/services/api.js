@@ -106,6 +106,14 @@ export const api = {
     return response.json();
   },
 
+  async updateOrderStatus(orderId, status) {
+    const response = await fetch(`${API_BASE}/orders/${orderId}/status?status=${status}`, {
+      method: 'PATCH'
+    });
+    if (!response.ok) throw new Error('Failed to update order status');
+    return response.json();
+  },
+
   // AI Assistant
   async chat(message, conversationHistory = []) {
     const response = await fetch(`${API_BASE}/chat`, {
