@@ -15,6 +15,21 @@ from services.cache import (
 router = APIRouter()
 
 
+@router.get("/products/search/autocomplete")
+async def autocomplete(
+    q: str = Query(..., min_length=1, description="Search query"),
+    limit: int = Query(10, ge=1, le=20),
+    db: Session = Depends(get_db)
+):
+    """Get autocomplete suggestions for product search"""
+    search_term = f"%{q}%"
+    products = db.query(Product).filter(
+        Product.name.ilike(search_term)
+    ).limit(limit).all()
+
+    return [{"id": p.id, "name": p.name, "category": p.category} for p in products]
+
+
 @router.get("/products", response_model=List[ProductResponse])
 async def get_products(
     search: Optional[str] = Query(None, description="Search products by name or description"),
@@ -210,21 +225,6 @@ async def get_categories(db: Session = Depends(get_db)):
     cache_set(cache_key, result, CACHE_TTL_CATEGORIES)
 
     return result
-
-
-@router.get("/products/search/autocomplete")
-async def autocomplete(
-    q: str = Query(..., min_length=1, description="Search query"),
-    limit: int = Query(10, ge=1, le=20),
-    db: Session = Depends(get_db)
-):
-    """Get autocomplete suggestions for product search"""
-    search_term = f"%{q}%"
-    products = db.query(Product).filter(
-        Product.name.ilike(search_term)
-    ).limit(limit).all()
-
-    return [{"id": p.id, "name": p.name, "category": p.category} for p in products]
 
 
 @router.post("/products", response_model=ProductResponse, status_code=201)

@@ -43,18 +43,34 @@ export function startStatusProgression(orderId: number): void {
   // Save initial pending timestamp
   saveTimestamp(orderId, 'pending');
 
-  // Schedule each status transition
-  Object.entries(STATUS_DELAYS).forEach(([status, delay]) => {
+  // Chain status transitions sequentially to avoid race conditions
+  const statusSequence: Array<{ status: string; delay: number }> = [
+    { status: 'confirmed', delay: STATUS_DELAYS.confirmed },
+    { status: 'shipped', delay: STATUS_DELAYS.shipped },
+    { status: 'delivered', delay: STATUS_DELAYS.delivered },
+  ];
+
+  async function processNextStatus(index: number): Promise<void> {
+    if (index >= statusSequence.length) return;
+
+    const { status, delay } = statusSequence[index];
+
     window.setTimeout(async () => {
       try {
         await api.updateOrderStatus(orderId, status as OrderStatus);
         saveTimestamp(orderId, status);
         dispatchStatusChange(orderId, status);
+        // Process next status only after current one completes
+        processNextStatus(index + 1);
       } catch (err) {
         console.error(`Failed to update order ${orderId} to ${status}:`, err);
+        // Still try next status even if this one fails
+        processNextStatus(index + 1);
       }
-    }, delay);
-  });
+    }, index === 0 ? delay : (statusSequence[index].delay - statusSequence[index - 1].delay));
+  }
+
+  processNextStatus(0);
 }
 
 // Get the index of a status (for progress calculation)

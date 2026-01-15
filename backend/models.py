@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
 
@@ -10,7 +10,7 @@ class ProductBase(BaseModel):
     category: str
     subcategory: Optional[str] = None
     unit: str
-    price: float
+    price: float = Field(gt=0, description="Price must be greater than 0")
     image_url: Optional[str] = None
     is_food: Optional[int] = 1  # 1 = food item, 0 = non-food (supplies)
     barcode: Optional[str] = None
@@ -26,7 +26,7 @@ class ProductUpdate(BaseModel):
     category: Optional[str] = None
     subcategory: Optional[str] = None
     unit: Optional[str] = None
-    price: Optional[float] = None
+    price: Optional[float] = Field(default=None, gt=0, description="Price must be greater than 0")
     image_url: Optional[str] = None
     in_stock: Optional[int] = None
     is_food: Optional[int] = None
@@ -44,7 +44,7 @@ class ProductResponse(ProductBase):
 # Order schemas
 class OrderItemCreate(BaseModel):
     product_id: int
-    quantity: float
+    quantity: float = Field(gt=0, description="Quantity must be greater than 0")
 
 
 class OrderItemResponse(BaseModel):

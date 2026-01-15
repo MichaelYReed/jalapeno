@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -78,7 +78,7 @@ async def get_order(order_id: int, db: Session = Depends(get_db)):
 @router.patch("/orders/{order_id}/status")
 async def update_order_status(
     order_id: int,
-    status: str,
+    status: str = Query(..., description="New status for the order"),
     db: Session = Depends(get_db)
 ):
     """Update order status"""

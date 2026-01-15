@@ -1,7 +1,8 @@
 """Unsplash image search service for product images"""
+import os
 import httpx
 
-UNSPLASH_ACCESS_KEY = "xaqZd4jBjV5BNd6npPFL-ENIwEI06NA6RJPa6W0d-lc"
+UNSPLASH_ACCESS_KEY = os.getenv("UNSPLASH_ACCESS_KEY", "")
 
 
 async def search_unsplash_image(query: str) -> str | None:

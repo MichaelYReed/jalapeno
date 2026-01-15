@@ -185,8 +185,9 @@ def product_to_dict(product: Product) -> dict:
 
 def parse_product_markers(text: str, db: Session) -> tuple[str, list, list]:
     """Extract product markers and return clean text + suggestions + cart additions"""
-    suggestion_pattern = r'\[\[product:([^:]+):(\d+)\]\]'
-    cart_pattern = r'\[\[add-to-cart:([^:]+):(\d+)\]\]'
+    # Non-greedy patterns to handle product names with colons
+    suggestion_pattern = r'\[\[product:(.+?):(\d+)\]\]'
+    cart_pattern = r'\[\[add-to-cart:(.+?):(\d+)\]\]'
     suggestions = []
     cart_additions = []
 
@@ -254,7 +255,8 @@ async def process_chat_message_stream(
             model="gpt-4o-mini",
             messages=messages,
             temperature=0.7,
-            stream=True
+            stream=True,
+            timeout=60.0  # 60 second timeout for streaming
         )
 
         for chunk in stream:
