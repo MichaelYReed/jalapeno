@@ -105,3 +105,19 @@ body {
 .animate-scale-in {
   animation: scale-in 0.2s ease-out;
 }
+
+/* Streaming cursor animation for AI chat */
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+.streaming-cursor {
+  animation: blink 0.8s infinite;
+  font-weight: bold;
+  margin-left: 1px;
+}

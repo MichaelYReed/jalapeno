@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Mic, MicOff, Plus, Loader2 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useCart } from '../../context/CartContext';
+import { useToast } from '../../context/ToastContext';
 import VoiceInput from './VoiceInput';
 
 export default function Chat() {
@@ -12,6 +13,7 @@ export default function Chat() {
   const [suggestions, setSuggestions] = useState([]);
   const messagesEndRef = useRef(null);
   const { addItem } = useCart();
+  const toast = useToast();
 
   useEffect(() => {
     // Load initial suggestions
@@ -44,29 +46,77 @@ export default function Chat() {
     setInput('');
     setLoading(true);
 
+    // Create a unique ID for this assistant message
+    const assistantMessageId = Date.now();
+
+    // Add placeholder for streaming assistant message
+    setMessages(prev => [...prev, {
+      id: assistantMessageId,
+      role: 'assistant',
+      content: '',
+      suggestions: [],
+      isStreaming: true
+    }]);
+
     try {
       const conversationHistory = messages.map(m => ({
         role: m.role,
         content: m.content
       }));
 
-      const response = await api.chat(messageText, conversationHistory);
-
-      const assistantMessage = {
-        role: 'assistant',
-        content: response.message,
-        suggestions: response.suggestions,
-        needsClarification: response.needs_clarification
-      };
-
-      setMessages(prev => [...prev, assistantMessage]);
+      await api.chatStream(
+        messageText,
+        conversationHistory,
+        // onChunk - append text as it streams
+        (text) => {
+          setMessages(prev => prev.map(m =>
+            m.id === assistantMessageId
+              ? { ...m, content: m.content + text }
+              : m
+          ));
+        },
+        // onSuggestions - add product cards
+        (suggestions) => {
+          setMessages(prev => prev.map(m =>
+            m.id === assistantMessageId
+              ? { ...m, suggestions }
+              : m
+          ));
+        },
+        // onCartAdd - add items directly to cart
+        (items) => {
+          items.forEach(item => {
+            addItem(item.product, item.quantity);
+          });
+          toast.success(`Added ${items.length} item${items.length !== 1 ? 's' : ''} to cart`);
+        },
+        // onDone - mark streaming complete
+        () => {
+          setMessages(prev => prev.map(m =>
+            m.id === assistantMessageId
+              ? { ...m, isStreaming: false }
+              : m
+          ));
+          setLoading(false);
+        },
+        // onError
+        (error) => {
+          console.error('Stream error:', error);
+          setMessages(prev => prev.map(m =>
+            m.id === assistantMessageId
+              ? { ...m, content: m.content || "I'm sorry, I had trouble processing that request.", isStreaming: false }
+              : m
+          ));
+          setLoading(false);
+        }
+      );
     } catch (err) {
       console.error('Chat error:', err);
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: "I'm sorry, I had trouble processing that request. Please make sure the backend server is running and you have a valid OpenAI API key configured."
-      }]);
-    } finally {
+      setMessages(prev => prev.map(m =>
+        m.id === assistantMessageId
+          ? { ...m, content: "I'm sorry, I had trouble processing that request. Please make sure the backend server is running and you have a valid OpenAI API key configured.", isStreaming: false }
+          : m
+      ));
       setLoading(false);
     }
   };
@@ -126,7 +176,10 @@ export default function Chat() {
                     <Mic className="w-3 h-3" /> Voice
                   </div>
                 )}
-                <p className="whitespace-pre-wrap">{message.content}</p>
+                <p className="whitespace-pre-wrap">
+                  {message.content}
+                  {message.isStreaming && <span className="streaming-cursor">|</span>}
+                </p>
 
                 {/* Product Suggestions */}
                 {message.suggestions && message.suggestions.length > 0 && (
@@ -162,7 +215,7 @@ export default function Chat() {
           </AnimatePresence>
 
           <AnimatePresence>
-            {loading && (
+            {loading && !messages.some(m => m.isStreaming) && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -171,7 +224,7 @@ export default function Chat() {
               >
                 <div className="bg-gray-100 dark:bg-slate-800 rounded-lg p-3 flex items-center gap-2">
                   <Loader2 className="w-4 h-4 animate-spin dark:text-gray-200" />
-                  <span className="text-gray-600 dark:text-gray-400">Thinking...</span>
+                  <span className="text-gray-600 dark:text-gray-400">Connecting...</span>
                 </div>
               </motion.div>
             )}

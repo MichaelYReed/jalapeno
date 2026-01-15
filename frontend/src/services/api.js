@@ -120,6 +120,57 @@ export const api = {
     return response.json();
   },
 
+  async chatStream(message, conversationHistory = [], onChunk, onSuggestions, onCartAdd, onDone, onError) {
+    const response = await fetch(`${API_BASE}/chat/stream`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message,
+        conversation_history: conversationHistory
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to start stream');
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+
+      // Process complete SSE messages
+      const lines = buffer.split('\n');
+      buffer = lines.pop(); // Keep incomplete line in buffer
+
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          try {
+            const data = JSON.parse(line.slice(6));
+            if (data.type === 'text') {
+              onChunk?.(data.content);
+            } else if (data.type === 'suggestions') {
+              onSuggestions?.(data.suggestions);
+            } else if (data.type === 'cart_add') {
+              onCartAdd?.(data.items);
+            } else if (data.type === 'done') {
+              onDone?.();
+            } else if (data.type === 'error') {
+              onError?.(data.message);
+            }
+          } catch (e) {
+            console.warn('Failed to parse SSE data:', line);
+          }
+        }
+      }
+    }
+  },
+
   async voiceOrder(audioBase64) {
     const response = await fetch(`${API_BASE}/voice`, {
       method: 'POST',

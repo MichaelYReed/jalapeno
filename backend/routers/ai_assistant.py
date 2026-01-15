@@ -1,9 +1,11 @@
+import json
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 from database import get_db
 from models import ChatRequest, ChatResponse, VoiceRequest
-from services.ai_service import process_chat_message, transcribe_audio
+from services.ai_service import process_chat_message, process_chat_message_stream, transcribe_audio
 
 router = APIRouter()
 
@@ -24,6 +26,34 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     )
 
     return result
+
+
+@router.post("/chat/stream")
+async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
+    """Stream chat response via Server-Sent Events"""
+
+    async def event_generator():
+        conversation_history = [
+            {"role": msg.role, "content": msg.content}
+            for msg in request.conversation_history
+        ]
+
+        async for event in process_chat_message_stream(
+            message=request.message,
+            conversation_history=conversation_history,
+            db=db
+        ):
+            yield f"data: {json.dumps(event)}\n\n"
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no"
+        }
+    )
 
 
 @router.post("/voice")
