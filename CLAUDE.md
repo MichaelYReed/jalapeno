@@ -93,7 +93,7 @@ Prerequisites: AWS CLI, AWS Copilot CLI, Docker, configured AWS credentials with
 
 - **main.py** - FastAPI entry point. Loads `.env` before other imports (critical for OpenAI key).
 - **database.py** - SQLAlchemy models: `Product`, `Order`, `OrderItem`, `NutritionCache`
-- **models.py** - Pydantic schemas for request/response validation
+- **models.py** - Pydantic schemas for request/response validation (includes Field constraints: price > 0, quantity > 0)
 - **routers/** - API endpoints split by domain (catalog, orders, ai_assistant)
 - **services/ai_service.py** - OpenAI integration with lazy client initialization via `get_client()`
 - **services/nutrition_service.py** - USDA FoodData Central API integration with caching and query optimization
@@ -254,6 +254,7 @@ The fetch script skips products that already have images. Unsplash free tier all
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
+| `/api/products/search/autocomplete` | GET | Autocomplete suggestions for product search |
 | `/api/products` | GET | List products (supports `search`, `category`, `subcategory` params) |
 | `/api/products` | POST | Create new product |
 | `/api/products/{id}` | GET | Get single product |
@@ -276,11 +277,12 @@ The fetch script skips products that already have images. Unsplash free tier all
 |----------|-------------|----------|
 | `OPENAI_API_KEY` | OpenAI API key for chat and voice | Yes |
 | `USDA_API_KEY` | USDA FoodData Central API key for nutrition data | Yes |
+| `UNSPLASH_ACCESS_KEY` | Unsplash API key for product image search | Optional |
 | `DATABASE_URL` | PostgreSQL connection string | Production only |
 | `DB_SECRET` | AWS Secrets Manager JSON (alternative to DATABASE_URL) | AWS only |
 | `VITE_API_URL` | Backend API URL for frontend builds | Production only |
 
-Local development uses SQLite by default if `DATABASE_URL` is not set. Get USDA API key at https://fdc.nal.usda.gov/api-key-signup.html
+Local development uses SQLite by default if `DATABASE_URL` is not set. Get USDA API key at https://fdc.nal.usda.gov/api-key-signup.html. Get Unsplash API key at https://unsplash.com/developers
 
 ## AWS Architecture
 
