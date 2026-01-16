@@ -1,22 +1,13 @@
 import { useState, useRef } from 'react';
 import { Mic, MicOff, Loader2 } from 'lucide-react';
 import { api } from '../../services/api';
-import type { ChatSuggestion } from '../../types';
-
-interface VoiceResponse {
-  transcribed_text?: string;
-  message: string;
-  suggestions?: ChatSuggestion[];
-  needs_clarification?: boolean;
-}
 
 interface VoiceInputProps {
-  onResult: (transcribedText: string, response: VoiceResponse) => void;
+  onTranscribed: (transcribedText: string) => void;
   disabled: boolean;
-  conversationHistory: { role: string; content: string }[];
 }
 
-export default function VoiceInput({ onResult, disabled, conversationHistory }: VoiceInputProps) {
+export default function VoiceInput({ onTranscribed, disabled }: VoiceInputProps) {
   const [recording, setRecording] = useState(false);
   const [processing, setProcessing] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -72,10 +63,12 @@ export default function VoiceInput({ onResult, disabled, conversationHistory }: 
   const processAudio = async (audioBase64: string) => {
     setProcessing(true);
     try {
-      const response = await api.voiceOrder(audioBase64, conversationHistory);
+      const response = await api.voiceTranscribe(audioBase64);
 
       if (response.transcribed_text) {
-        onResult(response.transcribed_text, response);
+        onTranscribed(response.transcribed_text);
+      } else {
+        alert("I couldn't understand the audio. Please try again.");
       }
     } catch (err) {
       console.error('Voice processing error:', err);

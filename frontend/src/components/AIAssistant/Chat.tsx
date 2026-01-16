@@ -7,12 +7,6 @@ import { useToast } from '../../context/ToastContext';
 import VoiceInput from './VoiceInput';
 import type { Product, ChatSuggestion, ChatMessage } from '../../types';
 
-interface VoiceResponse {
-  message: string;
-  suggestions?: ChatSuggestion[];
-  needs_clarification?: boolean;
-}
-
 interface CartAddItem {
   product: Product;
   quantity: number;
@@ -50,10 +44,10 @@ export default function Chat() {
     }
   };
 
-  const handleSend = async (messageText: string = input) => {
+  const handleSend = async (messageText: string = input, isVoice: boolean = false) => {
     if (!messageText.trim() || loading) return;
 
-    const userMessage: ChatMessage = { role: 'user', content: messageText };
+    const userMessage: ChatMessage = { role: 'user', content: messageText, isVoice };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setLoading(true);
@@ -133,20 +127,9 @@ export default function Chat() {
     }
   };
 
-  const handleVoiceResult = async (transcribedText: string, response: VoiceResponse) => {
-    // Add the transcribed message
-    setMessages(prev => [...prev, {
-      role: 'user',
-      content: transcribedText,
-      isVoice: true
-    }]);
-
-    // Add the AI response
-    setMessages(prev => [...prev, {
-      role: 'assistant',
-      content: response.message,
-      suggestions: response.suggestions
-    }]);
+  const handleVoiceTranscribed = (transcribedText: string) => {
+    // Send voice message through the same streaming flow as typed messages
+    handleSend(transcribedText, true);
   };
 
   const handleAddToCart = (suggestion: ChatSuggestion) => {
@@ -272,9 +255,8 @@ export default function Chat() {
         <div className="p-4 border-t dark:border-slate-700">
           <div className="flex items-center gap-2">
             <VoiceInput
-              onResult={handleVoiceResult}
+              onTranscribed={handleVoiceTranscribed}
               disabled={loading}
-              conversationHistory={messages.map(m => ({ role: m.role, content: m.content }))}
             />
             <input
               type="text"

@@ -208,6 +208,16 @@ export const api = {
     }
   },
 
+  async voiceTranscribe(audioBase64: string): Promise<{ transcribed_text: string }> {
+    const response = await fetch(`${API_BASE}/voice/transcribe`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ audio_base64: audioBase64 })
+    });
+    if (!response.ok) throw new Error('Failed to transcribe voice');
+    return response.json();
+  },
+
   async voiceOrder(audioBase64: string, conversationHistory: { role: string; content: string }[] = []): Promise<{ transcription: string; response: string; suggestions?: ChatSuggestion[] }> {
     const response = await fetch(`${API_BASE}/voice`, {
       method: 'POST',

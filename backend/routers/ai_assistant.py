@@ -96,6 +96,19 @@ async def voice_order(request: VoiceRequest, db: Session = Depends(get_db)):
         )
 
 
+@router.post("/voice/transcribe")
+async def voice_transcribe(request: VoiceRequest):
+    """Transcribe audio only - use /chat/stream for processing"""
+    try:
+        transcribed_text = await transcribe_audio(request.audio_base64)
+        return {"transcribed_text": transcribed_text or ""}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error transcribing audio: {str(e)}"
+        )
+
+
 @router.get("/chat/suggestions")
 async def get_suggestions(db: Session = Depends(get_db)):
     """Get example prompts for the chat interface"""
