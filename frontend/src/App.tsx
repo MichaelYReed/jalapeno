@@ -89,9 +89,12 @@ function App() {
                 <Menu className="w-6 h-6 dark:text-gray-200" />
               </button>
               <div>
-                <h1 className="text-2xl font-bold text-primary-600 dark:text-primary-400">
+                <button
+                  onClick={() => setActiveTab('catalog')}
+                  className="text-2xl font-bold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
+                >
                   Jalapeño
-                </h1>
+                </button>
                 {user?.company && (
                   <p className="text-sm italic text-gray-600 dark:text-gray-300 tracking-wide">
                     {user.company}
