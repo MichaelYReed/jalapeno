@@ -13,9 +13,10 @@ interface VoiceResponse {
 interface VoiceInputProps {
   onResult: (transcribedText: string, response: VoiceResponse) => void;
   disabled: boolean;
+  conversationHistory: { role: string; content: string }[];
 }
 
-export default function VoiceInput({ onResult, disabled }: VoiceInputProps) {
+export default function VoiceInput({ onResult, disabled, conversationHistory }: VoiceInputProps) {
   const [recording, setRecording] = useState(false);
   const [processing, setProcessing] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -71,7 +72,7 @@ export default function VoiceInput({ onResult, disabled }: VoiceInputProps) {
   const processAudio = async (audioBase64: string) => {
     setProcessing(true);
     try {
-      const response = await api.voiceOrder(audioBase64);
+      const response = await api.voiceOrder(audioBase64, conversationHistory);
 
       if (response.transcribed_text) {
         onResult(response.transcribed_text, response);

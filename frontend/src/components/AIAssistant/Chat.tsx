@@ -271,7 +271,11 @@ export default function Chat() {
         {/* Input Area */}
         <div className="p-4 border-t dark:border-slate-700">
           <div className="flex items-center gap-2">
-            <VoiceInput onResult={handleVoiceResult} disabled={loading} />
+            <VoiceInput
+              onResult={handleVoiceResult}
+              disabled={loading}
+              conversationHistory={messages.map(m => ({ role: m.role, content: m.content }))}
+            />
             <input
               type="text"
               value={input}

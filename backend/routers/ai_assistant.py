@@ -73,9 +73,14 @@ async def voice_order(request: VoiceRequest, db: Session = Depends(get_db)):
             }
 
         # Process the transcribed text through the chat system
+        conversation_history = [
+            {"role": msg.role, "content": msg.content}
+            for msg in request.conversation_history
+        ]
+
         result = await process_chat_message(
             message=transcribed_text,
-            conversation_history=[],
+            conversation_history=conversation_history,
             db=db
         )
 

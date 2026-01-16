@@ -98,6 +98,7 @@ class ChatResponse(BaseModel):
 
 class VoiceRequest(BaseModel):
     audio_base64: str  # Base64 encoded audio data
+    conversation_history: Optional[List[ChatMessage]] = []
 
 
 # Nutrition schemas
