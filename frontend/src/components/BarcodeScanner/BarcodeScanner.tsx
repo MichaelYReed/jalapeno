@@ -37,18 +37,15 @@ export default function BarcodeScanner({ isOpen, onClose }: BarcodeScannerProps)
   }, []);
 
   const lookupBarcode = useCallback(async (barcode: string) => {
-    console.log('lookupBarcode called with:', barcode);
     setLoading(true);
     setSimilarProducts(null);
     setExternalName(null);
     try {
       const result: Product | BarcodeResult | null = await api.getProductByBarcode(barcode);
-      console.log('API result:', result);
       if (result) {
         const barcodeResult = result as BarcodeResult;
         if (barcodeResult.found === false) {
           // Not found in local DB - check for similar products
-          console.log('Barcode not in local DB, similar products:', barcodeResult.similar_products?.length);
           if (barcodeResult.similar_products && barcodeResult.similar_products.length > 0) {
             setExternalName(barcodeResult.external_name || null);
             setSimilarProducts(barcodeResult.similar_products);
@@ -58,16 +55,13 @@ export default function BarcodeScanner({ isOpen, onClose }: BarcodeScannerProps)
           }
         } else {
           // Direct match in local DB
-          console.log('Direct match found:', (result as Product).name);
           setScannedProduct(result as Product);
           setQuantity(1);
         }
       } else {
-        console.log('No result from API');
         setError(`No product found for barcode: ${barcode}`);
       }
     } catch (err) {
-      console.error('Barcode lookup error:', err);
       setError('Failed to lookup product. Please check your connection.');
     } finally {
       setLoading(false);
@@ -75,11 +69,7 @@ export default function BarcodeScanner({ isOpen, onClose }: BarcodeScannerProps)
   }, []);
 
   const startScanner = useCallback(() => {
-    console.log('startScanner called, scannerRef.current:', scannerRef.current);
-    if (!scannerRef.current) {
-      console.log('scannerRef.current is null, returning early');
-      return;
-    }
+    if (!scannerRef.current) return;
 
     setError(null);
     setScannedProduct(null);
@@ -88,7 +78,6 @@ export default function BarcodeScanner({ isOpen, onClose }: BarcodeScannerProps)
     // Clean up any existing handlers before re-initializing
     Quagga.offDetected();
 
-    console.log('Initializing Quagga...');
     Quagga.init({
       inputStream: {
         name: "Live",
