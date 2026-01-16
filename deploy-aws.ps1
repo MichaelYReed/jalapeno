@@ -91,7 +91,12 @@ function Initialize-Environment {
 
 # Store secrets
 function Set-Secrets {
-    param([string]$OpenAIKey)
+    param(
+        [string]$OpenAIKey,
+        [string]$UsdaKey,
+        [string]$UnsplashKey,
+        [string]$RedisUrl
+    )
 
     Write-Step "Storing secrets in AWS SSM..."
 
@@ -106,6 +111,50 @@ function Set-Secrets {
         --overwrite
 
     Write-Success "OpenAI API key stored"
+
+    if (-not $UsdaKey) {
+        $UsdaKey = Read-Host "Enter your USDA API key (get one at https://fdc.nal.usda.gov/api-key-signup.html)"
+    }
+
+    aws ssm put-parameter `
+        --name "/copilot/jalapeno/prod/secrets/USDA_API_KEY" `
+        --value $UsdaKey `
+        --type SecureString `
+        --overwrite
+
+    Write-Success "USDA API key stored"
+
+    if (-not $UnsplashKey) {
+        $UnsplashKey = Read-Host "Enter your Unsplash API key (get one at https://unsplash.com/developers, or press Enter to skip)"
+    }
+
+    if ($UnsplashKey) {
+        aws ssm put-parameter `
+            --name "/copilot/jalapeno/prod/secrets/UNSPLASH_ACCESS_KEY" `
+            --value $UnsplashKey `
+            --type SecureString `
+            --overwrite
+
+        Write-Success "Unsplash API key stored"
+    } else {
+        Write-Host "Skipping Unsplash API key (barcode image fallback will be disabled)" -ForegroundColor Yellow
+    }
+
+    if (-not $RedisUrl) {
+        $RedisUrl = Read-Host "Enter your Redis URL (get one at https://redis.com/try-free/, or press Enter to skip)"
+    }
+
+    if ($RedisUrl) {
+        aws ssm put-parameter `
+            --name "/copilot/jalapeno/prod/secrets/REDIS_URL" `
+            --value $RedisUrl `
+            --type SecureString `
+            --overwrite
+
+        Write-Success "Redis URL stored"
+    } else {
+        Write-Host "Skipping Redis URL (caching will be disabled)" -ForegroundColor Yellow
+    }
 }
 
 # Deploy backend
@@ -387,7 +436,7 @@ Commands:
   deploy     - Full deployment (recommended for first time)
   init       - Initialize Copilot app only
   env        - Create/deploy environment only
-  secrets    - Store OpenAI API key
+  secrets    - Store API keys (OpenAI, USDA, Unsplash)
   backend    - Deploy backend service only
   frontend   - Deploy frontend to S3 + CloudFront (HTTPS)
   cloudfront - Create/update CloudFront distribution only

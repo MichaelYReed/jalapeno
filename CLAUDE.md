@@ -189,6 +189,16 @@ The AI chat uses streaming responses via Server-Sent Events (SSE) for real-time 
 - **seed_db.py** - Auto-seeds 78 products on startup if empty, or updates missing images/flags for existing products
 - Products have `is_food` flag: 1 = food item (has nutrition data), 0 = non-food supplies (no nutrition lookup)
 
+### Redis Caching
+
+The app uses Redis for API response caching via `services/cache.py`:
+
+- **Graceful degradation**: App continues working if Redis is unavailable (cache operations silently fail)
+- **Cached endpoints**: Product lists (5 min TTL), product details (1 hour), categories (1 hour)
+- **Local development**: Optionally run Redis via Docker (`docker run -p 6379:6379 redis`)
+- **Production**: Uses Redis Cloud (free tier) connected via `REDIS_URL` environment variable
+- **AWS Setup**: Store Redis URL in SSM with tags `copilot-application=jalapeno` and `copilot-environment=prod`
+
 ### Nutrition Service
 
 The nutrition service (`services/nutrition_service.py`) fetches data from USDA FoodData Central API:
@@ -278,11 +288,12 @@ The fetch script skips products that already have images. Unsplash free tier all
 | `OPENAI_API_KEY` | OpenAI API key for chat and voice | Yes |
 | `USDA_API_KEY` | USDA FoodData Central API key for nutrition data | Yes |
 | `UNSPLASH_ACCESS_KEY` | Unsplash API key for product image search | Optional |
+| `REDIS_URL` | Redis connection URL for caching (e.g., `redis://...`) | Optional |
 | `DATABASE_URL` | PostgreSQL connection string | Production only |
 | `DB_SECRET` | AWS Secrets Manager JSON (alternative to DATABASE_URL) | AWS only |
 | `VITE_API_URL` | Backend API URL for frontend builds | Production only |
 
-Local development uses SQLite by default if `DATABASE_URL` is not set. Get USDA API key at https://fdc.nal.usda.gov/api-key-signup.html. Get Unsplash API key at https://unsplash.com/developers
+Local development uses SQLite by default if `DATABASE_URL` is not set. Get USDA API key at https://fdc.nal.usda.gov/api-key-signup.html. Get Unsplash API key at https://unsplash.com/developers. For Redis, use Redis Cloud (https://redis.com/try-free/) or Upstash (https://upstash.com/).
 
 ## AWS Architecture
 
